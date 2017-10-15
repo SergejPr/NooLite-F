@@ -330,8 +330,3 @@ class NooLiteF(object):
                 status = False
 
         return status, infos
-
-
-noolite = NooLiteF(port="COM3")
-#noolite.switch(1)
-print(noolite.get_state(1))
