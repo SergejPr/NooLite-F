@@ -291,7 +291,7 @@ class NooLiteF(object):
         responses = self.send_module_command(channel, Command.LOAD_PRESET, broadcast, mode)
         return self.handle_command_responses(responses)
 
-    def get_state(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
+    def read_state(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
         responses = self.send_module_command(channel, Command.READ_STATE, broadcast, mode)
         return self.handle_command_responses(responses)
 
