@@ -275,27 +275,27 @@ class NooLiteF(object):
     def __init__(self, port: str):
         self.adapter = Adapter(port)
 
-    def on(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> (bool, [ModuleInfo]):
+    def on(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
         responses = self.send_module_command(channel, Command.ON, broadcast, mode)
         return self.handle_command_responses(responses)
 
-    def off(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> (bool, [ModuleInfo]):
+    def off(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
         responses = self.send_module_command(channel, Command.OFF, broadcast, mode)
         return self.handle_command_responses(responses)
 
-    def switch(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> (bool, [ModuleInfo]):
+    def switch(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
         responses = self.send_module_command(channel, Command.SWITCH, broadcast, mode)
         return self.handle_command_responses(responses)
 
-    def load_preset(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> (bool, [ModuleInfo]):
+    def load_preset(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
         responses = self.send_module_command(channel, Command.LOAD_PRESET, broadcast, mode)
         return self.handle_command_responses(responses)
 
-    def get_state(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> (bool, [ModuleInfo]):
+    def get_state(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
         responses = self.send_module_command(channel, Command.READ_STATE, broadcast, mode)
         return self.handle_command_responses(responses)
 
-    def set_brightness(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> (bool, [ModuleInfo]):
+    def set_brightness(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
         responses = self.send_module_command(channel, Command.SET_BRIGHTNESS, broadcast, mode)
         return self.handle_command_responses(responses)
 
@@ -318,15 +318,11 @@ class NooLiteF(object):
         self.adapter.close()
         return responses
 
-    def handle_command_responses(self, responses) -> (bool, [ModuleInfo]):
-        infos = []
-        status = True
+    def handle_command_responses(self, responses) -> [(bool, ModuleInfo)]:
+        results = []
         for response in responses:
-            if response.status == ResponseCode.SUCCESS:
-                info = ModuleInfoParser.parse(response)
-                if info is not None:
-                    infos.append(info)
-            else:
-                status = False
+            info = ModuleInfoParser.parse(response)
+            status = response.status == ResponseCode.SUCCESS or response.status == ResponseCode.BIND_SUCCESS
+            results.append((status, info))
 
-        return status, infos
+        return results
