@@ -304,20 +304,22 @@ class NooLiteF(object):
         request = Request()
 
         request.mode = mode
+        request.channel = channel
+        request.command = command
         if broadcast:
             request.action = Action.SEND_BROADCAST_COMMAND
         else:
             request.action = Action.SEND_COMMAND
 
-        request.channel = channel
-        request.command = command
+        responses = self.send_request(request)
+        return responses
 
+    def send_request(self, request: Request) -> [Response]:
         self.adapter.open()
-
         responses = self.adapter.send_request(request)
-
         self.adapter.close()
         return responses
+
 
     def handle_command_responses(self, responses) -> [(bool, ModuleInfo)]:
         results = []
