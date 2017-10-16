@@ -1,35 +1,34 @@
 from setuptools import setup
-from codecs import open
-from os import path
 
-here = path.abspath(path.dirname(__file__))
+import io
 
-with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
-    long_description = f.read()
 
-with open(path.join(here, 'LICENSE.txt'), encoding='utf-8') as f:
-    license_description = f.read()
+with io.open('README.rst', encoding="utf-8") as readme_file:
+    long_description = readme_file.read()
+
+with io.open('LICENSE.txt', encoding="utf-8") as license_file:
+    license_description = license_file.read()
 
 setup(
-    name='NooLiteF',
-    packages=['NooLiteF'],
-    version='0.0.4',
+    name="NooLite_F",
+    packages=["NooLite_F"],
+    version="0.0.5",
     license=license_description,
-    description='Module to work with NooLiteF (MTRF-64-USB)',
+    description="Module to work with NooLite_F (MTRF-64-USB)",
     long_description=long_description,
-    author='Sergey Prytkov',
-    author_email='sergej.prytkov@gmail.com',
-    url='https://github.com/SergejPr/NooLite-F',
-    keywords=['noolite', 'noolite-f', 'noolitef'],
-    install_requires=['pyserial'],
-    platforms='osx, posix, linux, windows',
+    author="Sergey Prytkov",
+    author_email="sergej.prytkov@gmail.com",
+    url="https://github.com/SergejPr/NooLite_F",
+    keywords="noolite noolite-f noolitef",
+    install_requires=["pyserial"],
+    platforms="osx, posix, linux, windows",
     classifiers=[
-        'Development Status :: 3 - Alpha',
-        'Intended Audience :: Developers',
-        'Topic :: Software Development :: Libraries :: Python Modules',
-        'Topic :: Home Automation',
-        'Topic :: System :: Hardware',
-        'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python :: 3.6',
+        "Development Status :: 3 - Alpha",
+        "Intended Audience :: Developers",
+        "Topic :: Software Development :: Libraries :: Python Modules",
+        "Topic :: Home Automation",
+        "Topic :: System :: Hardware",
+        "License :: OSI Approved :: MIT License",
+        "Programming Language :: Python :: 3.6",
     ]
 )
