@@ -3,7 +3,7 @@ NooLite-F
 
 Python module to work with NooLite-F (MTRF-64-USB)
 
-Currently implements base commands:
+Currently implemented only base commands:
 
 * on - turn power module on
 * off - turn power module off
