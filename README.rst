@@ -19,7 +19,7 @@ Each command can accept following parameters:
 * mode - adapter mode which will used for send command. Can be
 
   * nooLite TX - uses for nooLite modules (without feedback)
-    * nooLite-F TX - uses for nooLite-F modules (with feedback) (default)
+  * nooLite-F TX - uses for nooLite-F modules (with feedback) (default)
 
 In response for each command returns array which contains command result and module info for each power module assigned with selected channel.
 
