@@ -327,8 +327,3 @@ class NooLiteF(object):
             results.append((status, info))
 
         return results
-
-
-noolite = NooLiteF(port="COM3")
-
-print(noolite.switch(2))
