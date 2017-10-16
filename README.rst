@@ -43,7 +43,7 @@ Tested with MTRF-64-USB adapter and SLF-1-300 power modules.
 Example
 =======
 
-Exapmpe of usage::
+Example of usage::
 
     noolite = NooLiteF(port="COM3")
     noolite.switch(1)
