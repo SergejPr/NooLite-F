@@ -8,7 +8,7 @@ setup(
   author_email='sergej.prytkov@gmail.com',
   license='MIT',
   url='https://github.com/SergejPr/NooLite-F',
-  download_url='https://github.com/SergejPr/NooLite-F/archive/0.1.tar.gz',
+  download_url='https://github.com/SergejPr/NooLite-F/archive/0.0.1.tar.gz',
   keywords=['noolite', 'noolite-f', 'noolitef'],
   install_requires=['pyserial'],
   python_requires='>=3',
