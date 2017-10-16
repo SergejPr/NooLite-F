@@ -87,11 +87,12 @@ class ModuleInfo(object):
     mode: ModuleMode
     brightness: float = None
     id: int = None
-    hardware: int = None
+    firmware: int = None
     type: int = None
 
     def __repr__(self):
-        return "<ModuleInfo (0x{0:x}), id: 0x{1:x}, type: {2}, hardware: {3}, state: {4}, brightness: {5}, mode: {6}>".format(id(self), self.id, self.type, self.hardware, self.state, self.brightness, self.mode)
+        return "<ModuleInfo (0x{0:x}), id: 0x{1:x}, type: {2}, firmware: {3}, state: {4}, brightness: {5}, mode: {6}>"\
+            .format(id(self), self.id, self.type, self.firmware, self.state, self.brightness, self.mode)
 
 
 class PacketUtils:
@@ -213,7 +214,7 @@ class ModuleInfoParser:
         if response.command == Command.SEND_STATE:
             info = ModuleInfo()
             info.type = response.data[0]
-            info.hardware = response.data[1]
+            info.firmware = response.data[1]
             info.id = response.id
 
             if response.format == 0:
@@ -326,3 +327,8 @@ class NooLiteF(object):
             results.append((status, info))
 
         return results
+
+
+noolite = NooLiteF(port="COM3")
+
+print(noolite.switch(2))
