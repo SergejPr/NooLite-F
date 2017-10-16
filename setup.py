@@ -12,7 +12,7 @@ with io.open('LICENSE.txt', encoding="utf-8") as license_file:
 setup(
     name="NooLite_F",
     packages=["NooLite_F"],
-    version="0.0.5",
+    version="0.0.1",
     license=license_description,
     description="Module to work with NooLite_F (MTRF-64-USB)",
     long_description=long_description,
