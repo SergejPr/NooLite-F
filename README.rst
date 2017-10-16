@@ -1,8 +1,7 @@
-######### 
 NooLite-F
-#########
+=========
 
-Phyton module to work with NooLite-F (MTRF-64-USB)
+Python module to work with NooLite-F (MTRF-64-USB)
 
 Currently implements base commands:
 
@@ -17,7 +16,7 @@ Each command can accept following parameters:
 
 * channel - channel number to send command. Send command to all power modules assigned with selected channel.
 * broadcast - send command in broadcast mode. If True then send command to all power modules assigned with selected channel simultaneously (default - False)  
-* mode - adapter mode whith will used for send command. Can be 
+* mode - adapter mode which will used for send command. Can be
   
   * nooLite TX - uses for nooLite modules (without feedback)
   * nooLite-F TX - uses for nooLite-F modules (with feedback) (default)
@@ -32,21 +31,17 @@ Module info contains information about module: type, firmware version, state (on
     (True, <ModuleInfo (0x2e25a90), id: 0x52e3, type: 1, hardware: 3, state: 1, brightness: 1.0, mode: 0>)
     ]
 
-
 If command result is False, then module info is None.::
 
     [(False, None)]
 
-
-#### 
 Note
-####
+====
 
 Tested with MTRF-64-USB adapter and SLF-1-300 power modules.
 
-#######
 Example
-#######
+=======
 
 noolite = NooLiteF(port="COM3")
 
