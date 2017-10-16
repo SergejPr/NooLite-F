@@ -7,7 +7,7 @@ with io.open('README.rst', encoding="utf-8") as readme_file:
 setup(
     name="NooLite_F",
     packages=["NooLite_F"],
-    version="0.0.2",
+    version="0.0.3",
     license="MIT License",
     description="Module to work with NooLite_F (MTRF-64-USB)",
     long_description=long_description,
@@ -16,7 +16,7 @@ setup(
     url="https://github.com/SergejPr/NooLite-F",
     keywords="noolite noolite-f noolitef",
     install_requires=["pyserial"],
-    platforms="osx, posix, linux, windows",
+    platforms="any",
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
