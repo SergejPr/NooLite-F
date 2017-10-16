@@ -13,7 +13,7 @@ with open(path.join(here, 'LICENSE.txt'), encoding='utf-8') as f:
 setup(
     name='NooLiteF',
     packages=['NooLiteF'],
-    version='0.0.3',
+    version='0.0.4',
     license=license_description,
     description='Module to work with NooLiteF (MTRF-64-USB)',
     long_description=long_description,
