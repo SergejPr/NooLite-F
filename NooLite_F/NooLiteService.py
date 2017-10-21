@@ -19,6 +19,11 @@ class BrightnessDirection(IntEnum):
     DOWN = 1,
 
 
+class ModuleType(IntEnum):
+    NOOLITE = 0
+    NOOLITE_F = 1
+
+
 class ModuleInfo(object):
     state: ModuleState
     mode: ModuleMode
