@@ -556,9 +556,9 @@ class NooLiteF(object):
         :return: for nooLite-F command returns array which contains command result and module info for each module that are binded with selected channel. For nooLite modules returns nothing.
         """
         data: bytearray = bytearray(3)
-        data[0] = self.convert_color_bright(red)
-        data[1] = self.convert_color_bright(green)
-        data[2] = self.convert_color_bright(blue)
+        data[0] = self.convert_color_brightness(red)
+        data[1] = self.convert_color_brightness(green)
+        data[2] = self.convert_color_brightness(blue)
 
         responses = self.send_module_command(channel, Command.SET_BRIGHTNESS, broadcast, mode, data, 3)
         return self.handle_command_responses(responses)
@@ -678,7 +678,7 @@ class NooLiteF(object):
 
         return results
 
-    def convert_color_bright(self, bright: float) -> int:
+    def convert_color_brightness(self, bright: float) -> int:
         if bright >= 1:
             value = 255
         elif bright <= 0:
