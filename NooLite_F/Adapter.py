@@ -58,7 +58,7 @@ class Action(IntEnum):
     BIND_MODE_OFF = 4,
     CLEAR_CHANNEL = 5,
     CLEAR_MEMORY = 6,
-    UNBIND = 7,
+    UNBIND_ADDRESS_FROM_CHANNEL = 7,
     SEND_COMMAND_BY_ADDRESS = 8
 
 
