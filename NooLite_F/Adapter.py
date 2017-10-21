@@ -204,23 +204,23 @@ class ResponsePacketParser:
 
 
 class Adapter(object):
-    port = None
-    serial = Serial()
+    _port = None
+    _serial = Serial()
 
     def __init__(self, port: str):
-        self.port = port
+        self._port = port
 
     def open(self):
-        self.serial.port = self.port
-        self.serial.baudrate = 9600
-        self.serial.timeout = 3
-        self.serial.open()
+        self._serial.port = self._port
+        self._serial.baudrate = 9600
+        self._serial.timeout = 3
+        self._serial.open()
 
     def close(self):
-        self.serial.close()
+        self._serial.close()
 
     def read_response(self) -> Response:
-        data = self.serial.read(ResponsePacketParser.PACKET_SIZE)
+        data = self._serial.read(ResponsePacketParser.PACKET_SIZE)
         response = ResponsePacketParser.parse(data)
         print("Receive:\n - packet: {0},\n - response: {1}".format(data, response))
         return response
@@ -232,7 +232,7 @@ class Adapter(object):
         print("Send:\n - request: {0},\n - packet: {1}".format(request, data))
 
         try:
-            self.serial.write(data)
+            self._serial.write(data)
 
             response = self.read_response()
             responses.append(response)

@@ -1,4 +1,4 @@
-from .NooLite_F import NooLiteF
+from .NooLiteService import NooLiteService
 
 
 
