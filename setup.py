@@ -9,7 +9,7 @@ setup(
     packages=["NooLite_F"],
     version="0.0.4",
     license="MIT License",
-    description="Module to work with NooLite_F (MTRF-64-USB)",
+    description="Module to work with NooLite/NooLite-F modules via MTRF-64-USB adapter",
     long_description=long_description,
     author="Sergey Prytkov",
     author_email="sergej.prytkov@gmail.com",
