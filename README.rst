@@ -71,7 +71,24 @@ Example
 
 Example of usage::
 
-    noolite = NooLiteF(port="COM3")
-    noolite.switch(1)
-    noolite.switch(1, broadcast=True)
-    noolite.switch(1, broadcast=True, mode=Mode.TX_F)
+    noolite = NooLiteService(port="COM3")
+    noolite.on(1)
+    noolite.set_brightness(1, 0.7)
+    noolite.off(1)
+
+    noolite.on(2, mode = Mode.TX)
+    noolite.set_brightness(2, 0.7, mode = Mode.TX)
+    noolite.off(2)
+
+or::
+
+    module = Dimmer("COM3", 1, ModuleType.NOOLITE_F, true)
+    module.on()
+    module.set_brightness(0.7)
+    module.off()
+
+    module = Dimmer("COM3", 2, ModuleType.NOOLITE)
+    module.on()
+    module.set_brightness(0.7)
+    module.off()
+
