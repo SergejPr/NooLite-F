@@ -1,4 +1,11 @@
-from .NooLiteService import NooLiteService, ModuleType, ModuleInfo, Mode, BrightnessDirection
+from enum import IntEnum
+
+from NooLite_F.NooLiteService import NooLiteService, ModuleInfo, Mode, BrightnessDirection
+
+
+class ModuleType(IntEnum):
+    NOOLITE = 0
+    NOOLITE_F = 1
 
 
 class Switch(object):
