@@ -6,12 +6,33 @@ from serial import Serial
 
 class Command(IntEnum):
     OFF = 0,
+    BRIGHT_DOWN = 1,
     ON = 2,
+    BRIGHT_UP = 3,
     SWITCH = 4,
+    BRIGHT_BACK = 5,
     SET_BRIGHTNESS = 6,
     LOAD_PRESET = 7,
+    SAVE_PRESET = 8,
+    UNBIND = 9,
+    STOP_BRIGHT = 10,
+    BRIGHT_STEP_DOWN = 11,
+    BRIGHT_STEP_UP = 12,
+    BRIGHT_REG = 13,
+    BIND = 15,
+    ROLL_COLOR = 16,
+    SWITCH_COLOR = 17,
+    SWITCH_MODE = 18,
+    SPEED_MODE = 19,
+    BATTERY_LOW = 20,
+    SENS_TEMP_HUMI = 21,
+    TEMPORARY_ON = 25,
+    MODES = 26,
     READ_STATE = 128,
-    SEND_STATE = 130
+    WRITE_STATE = 129,
+    SEND_STATE = 130,
+    SERVICE = 131,
+    CLEAR_MEMORY = 132
 
 
 class Mode(IntEnum):
@@ -20,7 +41,7 @@ class Mode(IntEnum):
     TX_F = 2,
     RX_F = 3,
     SERVICE = 4,
-    UPDATE = 5
+    FIRMWARE_UPDATE = 5
 
 
 class ResponseCode(IntEnum):
@@ -53,6 +74,11 @@ class ModuleMode(IntEnum):
     BIND_ON = 1,
 
 
+class BrightnessDirection(IntEnum):
+    UP = 0,
+    DOWN = 1,
+
+
 class Request(object):
     mode: Mode = Mode.TX_F
     action: Action = Action.SEND_COMMAND
@@ -63,7 +89,7 @@ class Request(object):
     id: int = 0
 
     def __repr__(self):
-        return "<Request (0x{0:x}), mode: {1}, action: {2}, channel: {3}, command: {4}, format: {5}, data: {6}, id: 0x{7:x}>"\
+        return "<Request (0x{0:x}), mode: {1}, action: {2}, channel: {3:d}, command: {4:d}, format: {5:d}, data: {6}, id: 0x{7:x}>"\
             .format(id(self), self.mode, self.action, self.channel, self.command, self.format, self.data, self.id)
 
 
@@ -78,7 +104,7 @@ class Response(object):
     id: int = None
 
     def __repr__(self):
-        return "<Response (0x{0:x}), mode: {1}, status: {2}, channel: {3}, command: {4}, format: {5}, data: {6}, id: 0x{7:x}>"\
+        return "<Response (0x{0:x}), mode: {1}, status: {2}, channel: {3:d}, command: {4:d}, format: {5:d}, data: {6}, id: 0x{7:x}>"\
             .format(id(self), self.mode, self.status, self.channel, self.command, self.format, self.data, self.id)
 
 
@@ -269,6 +295,8 @@ class Adapter(object):
         return responses
 
 
+# TODO: replace format with enum or constants???
+
 class NooLiteF(object):
 
     adapter = None
@@ -276,31 +304,171 @@ class NooLiteF(object):
     def __init__(self, port: str):
         self.adapter = Adapter(port)
 
+    def off(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
+        responses = self.send_module_command(channel, Command.OFF, broadcast, mode)
+        return self.handle_command_responses(responses)
+
     def on(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
         responses = self.send_module_command(channel, Command.ON, broadcast, mode)
         return self.handle_command_responses(responses)
 
-    def off(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
-        responses = self.send_module_command(channel, Command.OFF, broadcast, mode)
+    # duration measurement equals 5 sec.
+    def temporary_on(self, channel: int, duration: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
+        data: bytearray = bytearray(2)
+        data[0] = duration & 0x00FF
+        data[1] = duration & 0xFF00
+
+        responses = self.send_module_command(channel, Command.TEMPORARY_ON, broadcast, mode, data, 6)
+        return self.handle_command_responses(responses)
+
+    def enable_temporary_on(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
+        data: bytearray = bytearray(1)
+        data[0] = 0
+
+        responses = self.send_module_command(channel, Command.MODES, broadcast, mode, data, 1)
+        return self.handle_command_responses(responses)
+
+    def disable_temporary_on(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
+        data: bytearray = bytearray(1)
+        data[0] = 1
+
+        responses = self.send_module_command(channel, Command.MODES, broadcast, mode, data, 1)
         return self.handle_command_responses(responses)
 
     def switch(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
         responses = self.send_module_command(channel, Command.SWITCH, broadcast, mode)
         return self.handle_command_responses(responses)
 
+    def bright_tune(self, channel: int, direction: BrightnessDirection, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
+        if direction == BrightnessDirection.UP:
+            command = Command.BRIGHT_UP
+        else:
+            command = Command.BRIGHT_DOWN
+
+        responses = self.send_module_command(channel, command, broadcast, mode)
+        return self.handle_command_responses(responses)
+
+    def bright_tune_back(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
+        responses = self.send_module_command(channel, Command.BRIGHT_BACK, broadcast, mode)
+        return self.handle_command_responses(responses)
+
+    def bright_tune_stop(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
+        responses = self.send_module_command(channel, Command.STOP_BRIGHT, broadcast, mode)
+        return self.handle_command_responses(responses)
+
+    # speed in range from (0 .. 1.0)
+    def bright_tune_custom(self, channel: int, direction: BrightnessDirection, speed: float, broadcast: bool = False, mode: Mode = Mode.TX_F):
+
+        if speed >= 1:
+            value = 127
+        elif speed <= 0:
+            value = 0
+        else:
+            value = int(speed * 127)
+
+        if direction == BrightnessDirection.DOWN:
+            value = -value - 1
+
+        data: bytearray = bytearray(1)
+        data[0] = value & 0xFF
+
+        responses = self.send_module_command(channel, Command.BRIGHT_REG, broadcast, mode, data, 1)
+        return self.handle_command_responses(responses)
+
+    # step in microseconds if specify then can have values in range (1..255) or 0 (it is means 256), by default step equals 64
+    def bright_step(self, channel: int, direction: BrightnessDirection, step: int = None, broadcast: bool = False, mode: Mode = Mode.TX_F):
+        data: bytearray = None
+        fmt: int = None
+
+        if step is not None:
+            fmt = 1
+            data: bytearray = bytearray(1)
+            data[0] = step
+
+        if direction == BrightnessDirection.UP:
+            command = Command.BRIGHT_STEP_UP
+        else:
+            command = Command.BRIGHT_STEP_DOWN
+
+        responses = self.send_module_command(channel, command, broadcast, mode, data, fmt)
+        return self.handle_command_responses(responses)
+
+    # brightness value is float value in range 0 .. 1.0
+    def set_brightness(self, channel: int, bright: float, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
+        if bright >= 1:
+            value = 255
+        elif bright <= 0:
+            value = 0
+        else:
+            value = 35 + int(120 * bright)
+
+        print(value)
+
+        data: bytearray = bytearray(1)
+        data[0] = value
+
+        responses = self.send_module_command(channel, Command.SET_BRIGHTNESS, broadcast, mode, data, 1)
+        return self.handle_command_responses(responses)
+
+    def roll_rgb_color(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
+        responses = self.send_module_command(channel, Command.ROLL_COLOR, broadcast, mode)
+        return self.handle_command_responses(responses)
+
+    def switch_rgb_color(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
+        responses = self.send_module_command(channel, Command.SWITCH_COLOR, broadcast, mode)
+        return self.handle_command_responses(responses)
+
+    def switch_rgb_mode(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
+        responses = self.send_module_command(channel, Command.SWITCH_MODE, broadcast, mode)
+        return self.handle_command_responses(responses)
+
+    def speed_rgb_mode(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
+        responses = self.send_module_command(channel, Command.SPEED_MODE, broadcast, mode)
+        return self.handle_command_responses(responses)
+
+    # brightness value is float value in range 0 .. 1.0
+    def set_rgb_brightness(self, channel: int, red: float, green: float, blue: float, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
+
+        data: bytearray = bytearray(3)
+        data[0] = self.convert_color_bright(red)
+        data[1] = self.convert_color_bright(green)
+        data[2] = self.convert_color_bright(blue)
+
+        responses = self.send_module_command(channel, Command.SET_BRIGHTNESS, broadcast, mode, data, 3)
+        return self.handle_command_responses(responses)
+
     def load_preset(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
         responses = self.send_module_command(channel, Command.LOAD_PRESET, broadcast, mode)
+        return self.handle_command_responses(responses)
+
+    def save_preset(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
+        responses = self.send_module_command(channel, Command.SAVE_PRESET, broadcast, mode)
         return self.handle_command_responses(responses)
 
     def read_state(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
         responses = self.send_module_command(channel, Command.READ_STATE, broadcast, mode)
         return self.handle_command_responses(responses)
 
-    def set_brightness(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
-        responses = self.send_module_command(channel, Command.SET_BRIGHTNESS, broadcast, mode)
+    def bind(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
+        responses = self.send_module_command(channel, Command.BIND, broadcast, mode)
         return self.handle_command_responses(responses)
 
-    def send_module_command(self, channel: int, command: Command, broadcast, mode: Mode) -> [Response]:
+    def unbind(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
+        responses = self.send_module_command(channel, Command.UNBIND, broadcast, mode)
+        return self.handle_command_responses(responses)
+
+    def service_mode_on(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
+        data: bytearray = bytearray(1)
+        data[0] = 1
+
+        responses = self.send_module_command(channel, Command.SERVICE, broadcast, mode, data)
+        return self.handle_command_responses(responses)
+
+    def service_mode_off(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
+        responses = self.send_module_command(channel, Command.SERVICE, broadcast, mode)
+        return self.handle_command_responses(responses)
+
+    def send_module_command(self, channel: int, command: Command, broadcast, mode: Mode, data: bytearray = None, fmt: int = None) -> [Response]:
         request = Request()
 
         request.mode = mode
@@ -311,6 +479,12 @@ class NooLiteF(object):
         else:
             request.action = Action.SEND_COMMAND
 
+        if data is not None:
+            request.data = data
+
+        if fmt is not None:
+            request.format = fmt
+
         responses = self.send_request(request)
         return responses
 
@@ -320,7 +494,6 @@ class NooLiteF(object):
         self.adapter.close()
         return responses
 
-
     def handle_command_responses(self, responses) -> [(bool, ModuleInfo)]:
         results = []
         for response in responses:
@@ -329,3 +502,13 @@ class NooLiteF(object):
             results.append((status, info))
 
         return results
+
+    def convert_color_bright(self, bright: float) -> int:
+        if bright >= 1:
+            value = 255
+        elif bright <= 0:
+            value = 0
+        else:
+            value = int(255 * bright)
+
+        return value
