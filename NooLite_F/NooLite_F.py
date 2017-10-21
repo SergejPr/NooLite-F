@@ -305,15 +305,37 @@ class NooLiteF(object):
         self.adapter = Adapter(port)
 
     def off(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
+        """ Turn off the modules
+
+        :param channel: the number of the channel for command. The command will be send to all modules that are binded with selected channel.
+        :param broadcast: broadcast mode for command. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False)
+        :param mode: mode of the command sending. TX - for nooLite module (without feedback), TX_F - for noolite-F modules (with feedback).
+        :return: for nooLite-F command returns array which contains command result and module info for each module that are binded with selected channel. For nooLite modules returns nothing.
+        """
         responses = self.send_module_command(channel, Command.OFF, broadcast, mode)
         return self.handle_command_responses(responses)
 
     def on(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
+        """ Turn on the modules
+
+        :param channel: the number of the channel for command. The command will be send to all modules that are binded with selected channel.
+        :param broadcast: broadcast mode for command. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False)
+        :param mode: mode of the command sending. TX - for nooLite module (without feedback), TX_F - for noolite-F modules (with feedback).
+        :return: for nooLite-F command returns array which contains command result and module info for each module that are binded with selected channel. For nooLite modules returns nothing.
+        """
         responses = self.send_module_command(channel, Command.ON, broadcast, mode)
         return self.handle_command_responses(responses)
 
     # duration measurement equals 5 sec.
     def temporary_on(self, channel: int, duration: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
+        """ Turn on the modules for a specified time interval
+
+        :param channel: the number of the channel for command. The command will be send to all modules that are binded with selected channel.
+        :param duration: the time during which the modules will be turned on
+        :param broadcast: broadcast mode for command. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False)
+        :param mode: mode of the command sending. TX - for nooLite module (without feedback), TX_F - for noolite-F modules (with feedback).
+        :return: for nooLite-F command returns array which contains command result and module info for each module that are binded with selected channel. For nooLite modules returns nothing.
+        """
         data: bytearray = bytearray(2)
         data[0] = duration & 0x00FF
         data[1] = duration & 0xFF00
@@ -322,6 +344,13 @@ class NooLiteF(object):
         return self.handle_command_responses(responses)
 
     def enable_temporary_on(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
+        """ Enable "temporary on" mode
+
+        :param channel: the number of the channel for command. The command will be send to all modules that are binded with selected channel.
+        :param broadcast: broadcast mode for command. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False)
+        :param mode: mode of the command sending. TX - for nooLite module (without feedback), TX_F - for noolite-F modules (with feedback).
+        :return: for nooLite-F command returns array which contains command result and module info for each module that are binded with selected channel. For nooLite modules returns nothing.
+        """
         data: bytearray = bytearray(1)
         data[0] = 0
 
@@ -329,6 +358,13 @@ class NooLiteF(object):
         return self.handle_command_responses(responses)
 
     def disable_temporary_on(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
+        """ Disable "temporary on" mode
+
+        :param channel: the number of the channel for command. The command will be send to all modules that are binded with selected channel.
+        :param broadcast: broadcast mode for command. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False)
+        :param mode: mode of the command sending. TX - for nooLite module (without feedback), TX_F - for noolite-F modules (with feedback).
+        :return: for nooLite-F command returns array which contains command result and module info for each module that are binded with selected channel. For nooLite modules returns nothing.
+        """
         data: bytearray = bytearray(1)
         data[0] = 1
 
@@ -336,10 +372,25 @@ class NooLiteF(object):
         return self.handle_command_responses(responses)
 
     def switch(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
+        """ Switch modules mode (on/off)
+
+        :param channel: the number of the channel for command. The command will be send to all modules that are binded with selected channel.
+        :param broadcast: broadcast mode for command. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False)
+        :param mode: mode of the command sending. TX - for nooLite module (without feedback), TX_F - for noolite-F modules (with feedback).
+        :return: for nooLite-F command returns array which contains command result and module info for each module that are binded with selected channel. For nooLite modules returns nothing.
+        """
         responses = self.send_module_command(channel, Command.SWITCH, broadcast, mode)
         return self.handle_command_responses(responses)
 
     def bright_tune(self, channel: int, direction: BrightnessDirection, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
+        """ Start to increase/decrease brightness
+
+        :param channel: the number of the channel for command. The command will be send to all modules that are binded with selected channel.
+        :param direction: direction of the brightness changing
+        :param broadcast: broadcast mode for command. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False)
+        :param mode: mode of the command sending. TX - for nooLite module (without feedback), TX_F - for noolite-F modules (with feedback).
+        :return: for nooLite-F command returns array which contains command result and module info for each module that are binded with selected channel. For nooLite modules returns nothing.
+        """
         if direction == BrightnessDirection.UP:
             command = Command.BRIGHT_UP
         else:
@@ -349,15 +400,38 @@ class NooLiteF(object):
         return self.handle_command_responses(responses)
 
     def bright_tune_back(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
+        """ Invert direction of the brightness change
+
+        :param channel: the number of the channel for command. The command will be send to all modules that are binded with selected channel.
+        :param broadcast: broadcast mode for command. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False)
+        :param mode: mode of the command sending. TX - for nooLite module (without feedback), TX_F - for noolite-F modules (with feedback).
+        :return: for nooLite-F command returns array which contains command result and module info for each module that are binded with selected channel. For nooLite modules returns nothing.
+        """
         responses = self.send_module_command(channel, Command.BRIGHT_BACK, broadcast, mode)
         return self.handle_command_responses(responses)
 
     def bright_tune_stop(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
+        """ Stop brightness changing
+
+        :param channel: the number of the channel for command. The command will be send to all modules that are binded with selected channel.
+        :param broadcast: broadcast mode for command. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False)
+        :param mode: mode of the command sending. TX - for nooLite module (without feedback), TX_F - for noolite-F modules (with feedback).
+        :return: for nooLite-F command returns array which contains command result and module info for each module that are binded with selected channel. For nooLite modules returns nothing.
+        """
         responses = self.send_module_command(channel, Command.STOP_BRIGHT, broadcast, mode)
         return self.handle_command_responses(responses)
 
     # speed in range from (0 .. 1.0)
     def bright_tune_custom(self, channel: int, direction: BrightnessDirection, speed: float, broadcast: bool = False, mode: Mode = Mode.TX_F):
+        """ Start to increase/decrease brightness with a specified speed
+
+        :param channel: the number of the channel for command. The command will be send to all modules that are binded with selected channel.
+        :param direction: direction of the brightness changing
+        :param speed: speed of the brightness changing. The range of value is 0 .. 1.0
+        :param broadcast: broadcast mode for command. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False)
+        :param mode: mode of the command sending. TX - for nooLite module (without feedback), TX_F - for noolite-F modules (with feedback).
+        :return: for nooLite-F command returns array which contains command result and module info for each module that are binded with selected channel. For nooLite modules returns nothing.
+        """
 
         if speed >= 1:
             value = 127
@@ -375,8 +449,16 @@ class NooLiteF(object):
         responses = self.send_module_command(channel, Command.BRIGHT_REG, broadcast, mode, data, 1)
         return self.handle_command_responses(responses)
 
-    # step in microseconds if specify then can have values in range (1..255) or 0 (it is means 256), by default step equals 64
     def bright_step(self, channel: int, direction: BrightnessDirection, step: int = None, broadcast: bool = False, mode: Mode = Mode.TX_F):
+        """ Increase/decrease brightness once with a specified step
+
+        :param channel: the number of the channel for command. The command will be send to all modules that are binded with selected channel.
+        :param direction: direction of the brightness changing
+        :param step: step in microseconds. If specify then can have values in range (1..255) or 0 (it is means 256), by default step equals 64
+        :param broadcast: broadcast mode for command. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False)
+        :param mode: mode of the command sending. TX - for nooLite module (without feedback), TX_F - for noolite-F modules (with feedback).
+        :return: for nooLite-F command returns array which contains command result and module info for each module that are binded with selected channel. For nooLite modules returns nothing.
+        """
         data: bytearray = None
         fmt: int = None
 
@@ -393,8 +475,15 @@ class NooLiteF(object):
         responses = self.send_module_command(channel, command, broadcast, mode, data, fmt)
         return self.handle_command_responses(responses)
 
-    # brightness value is float value in range 0 .. 1.0
     def set_brightness(self, channel: int, bright: float, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
+        """ Set brightness
+
+        :param channel: the number of the channel for command. The command will be send to all modules that are binded with selected channel.
+        :param bright: brightness level. The range of value is 0 .. 1.0
+        :param broadcast: broadcast mode for command. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False)
+        :param mode: mode of the command sending. TX - for nooLite module (without feedback), TX_F - for noolite-F modules (with feedback).
+        :return: for nooLite-F command returns array which contains command result and module info for each module that are binded with selected channel. For nooLite modules returns nothing.
+        """
         if bright >= 1:
             value = 255
         elif bright <= 0:
@@ -411,24 +500,61 @@ class NooLiteF(object):
         return self.handle_command_responses(responses)
 
     def roll_rgb_color(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
+        """ Start color changing (only for RGB Led modules)
+
+        :param channel: the number of the channel for command. The command will be send to all modules that are binded with selected channel.
+        :param broadcast: broadcast mode for command. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False)
+        :param mode: mode of the command sending. TX - for nooLite module (without feedback), TX_F - for noolite-F modules (with feedback).
+        :return: for nooLite-F command returns array which contains command result and module info for each module that are binded with selected channel. For nooLite modules returns nothing.
+        """
         responses = self.send_module_command(channel, Command.ROLL_COLOR, broadcast, mode)
         return self.handle_command_responses(responses)
 
     def switch_rgb_color(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
+        """ Switch color (only for RGB Led modules)
+
+        :param channel: the number of the channel for command. The command will be send to all modules that are binded with selected channel.
+        :param broadcast: broadcast mode for command. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False)
+        :param mode: mode of the command sending. TX - for nooLite module (without feedback), TX_F - for noolite-F modules (with feedback).
+        :return: for nooLite-F command returns array which contains command result and module info for each module that are binded with selected channel. For nooLite modules returns nothing.
+        """
         responses = self.send_module_command(channel, Command.SWITCH_COLOR, broadcast, mode)
         return self.handle_command_responses(responses)
 
     def switch_rgb_mode(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
+        """ Switch color changing modes (only for RGB Led modules)
+
+        :param channel: the number of the channel for command. The command will be send to all modules that are binded with selected channel.
+        :param broadcast: broadcast mode for command. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False)
+        :param mode: mode of the command sending. TX - for nooLite module (without feedback), TX_F - for noolite-F modules (with feedback).
+        :return: for nooLite-F command returns array which contains command result and module info for each module that are binded with selected channel. For nooLite modules returns nothing.
+        """
         responses = self.send_module_command(channel, Command.SWITCH_MODE, broadcast, mode)
         return self.handle_command_responses(responses)
 
-    def speed_rgb_mode(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
+    def switch_rgb_mode_speed(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
+        """ Switch speed of the color changing (only for RGB Led modules)
+
+        :param channel: the number of the channel for command. The command will be send to all modules that are binded with selected channel.
+        :param broadcast: broadcast mode for command. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False)
+        :param mode: mode of the command sending. TX - for nooLite module (without feedback), TX_F - for noolite-F modules (with feedback).
+        :return: for nooLite-F command returns array which contains command result and module info for each module that are binded with selected channel. For nooLite modules returns nothing.
+        """
         responses = self.send_module_command(channel, Command.SPEED_MODE, broadcast, mode)
         return self.handle_command_responses(responses)
 
     # brightness value is float value in range 0 .. 1.0
     def set_rgb_brightness(self, channel: int, red: float, green: float, blue: float, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
+        """ Set brightness for each rgb color (only for RGB Led modules)
 
+        :param channel: the number of the channel for command. The command will be send to all modules that are binded with selected channel.
+        :param red: red color brightness level. The range of value is 0 .. 1.0
+        :param green: green color brightness level. The range of value is 0 .. 1.0
+        :param blue: blue color brightness level. The range of value is 0 .. 1.0
+        :param broadcast: broadcast mode for command. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False)
+        :param mode: mode of the command sending. TX - for nooLite module (without feedback), TX_F - for noolite-F modules (with feedback).
+        :return: for nooLite-F command returns array which contains command result and module info for each module that are binded with selected channel. For nooLite modules returns nothing.
+        """
         data: bytearray = bytearray(3)
         data[0] = self.convert_color_bright(red)
         data[1] = self.convert_color_bright(green)
@@ -438,26 +564,68 @@ class NooLiteF(object):
         return self.handle_command_responses(responses)
 
     def load_preset(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
+        """ Load saved module state from preset
+
+        :param channel: the number of the channel for command. The command will be send to all modules that are binded with selected channel.
+        :param broadcast: broadcast mode for command. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False)
+        :param mode: mode of the command sending. TX - for nooLite module (without feedback), TX_F - for noolite-F modules (with feedback).
+        :return: for nooLite-F command returns array which contains command result and module info for each module that are binded with selected channel. For nooLite modules returns nothing.
+        """
         responses = self.send_module_command(channel, Command.LOAD_PRESET, broadcast, mode)
         return self.handle_command_responses(responses)
 
     def save_preset(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
+        """ Save current module state as preset
+
+        :param channel: the number of the channel for command. The command will be send to all modules that are binded with selected channel.
+        :param broadcast: broadcast mode for command. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False)
+        :param mode: mode of the command sending. TX - for nooLite module (without feedback), TX_F - for noolite-F modules (with feedback).
+        :return: for nooLite-F command returns array which contains command result and module info for each module that are binded with selected channel. For nooLite modules returns nothing.
+        """
         responses = self.send_module_command(channel, Command.SAVE_PRESET, broadcast, mode)
         return self.handle_command_responses(responses)
 
     def read_state(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
+        """  Read module state (only for NooLite-F modules)
+
+        :param channel: the number of the channel for command. The command will be send to all modules that are binded with selected channel.
+        :param broadcast: broadcast mode for command. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False)
+        :param mode: mode of the command sending. TX - for nooLite module (without feedback), TX_F - for noolite-F modules (with feedback).
+        :return: for nooLite-F command returns array which contains command result and module info for each module that are binded with selected channel. For nooLite modules returns nothing.
+        """
         responses = self.send_module_command(channel, Command.READ_STATE, broadcast, mode)
         return self.handle_command_responses(responses)
 
     def bind(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
+        """  Send bind command to module
+
+        :param channel: the number of the channel for command. The command will be send to all modules that are binded with selected channel.
+        :param broadcast: broadcast mode for command. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False)
+        :param mode: mode of the command sending. TX - for nooLite module (without feedback), TX_F - for noolite-F modules (with feedback).
+        :return: for nooLite-F command returns array which contains command result and module info for each module that are binded with selected channel. For nooLite modules returns nothing.
+        """
         responses = self.send_module_command(channel, Command.BIND, broadcast, mode)
         return self.handle_command_responses(responses)
 
     def unbind(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
+        """  Send unbind command to module
+
+        :param channel: the number of the channel for command. The command will be send to all modules that are binded with selected channel.
+        :param broadcast: broadcast mode for command. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False)
+        :param mode: mode of the command sending. TX - for nooLite module (without feedback), TX_F - for noolite-F modules (with feedback).
+        :return: for nooLite-F command returns array which contains command result and module info for each module that are binded with selected channel. For nooLite modules returns nothing.
+        """
         responses = self.send_module_command(channel, Command.UNBIND, broadcast, mode)
         return self.handle_command_responses(responses)
 
     def service_mode_on(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
+        """  Turn on the service mode on module (only for NooLite-F modules)
+
+        :param channel: the number of the channel for command. The command will be send to all modules that are binded with selected channel.
+        :param broadcast: broadcast mode for command. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False)
+        :param mode: mode of the command sending. TX - for nooLite module (without feedback), TX_F - for noolite-F modules (with feedback).
+        :return: for nooLite-F command returns array which contains command result and module info for each module that are binded with selected channel. For nooLite modules returns nothing.
+        """
         data: bytearray = bytearray(1)
         data[0] = 1
 
@@ -465,6 +633,13 @@ class NooLiteF(object):
         return self.handle_command_responses(responses)
 
     def service_mode_off(self, channel: int, broadcast: bool = False, mode: Mode = Mode.TX_F) -> [(bool, ModuleInfo)]:
+        """  Turn off the service mode on module (only for NooLite-F modules)
+
+        :param channel: the number of the channel for command. The command will be send to all modules that are binded with selected channel.
+        :param broadcast: broadcast mode for command. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False)
+        :param mode: mode of the command sending. TX - for nooLite module (without feedback), TX_F - for noolite-F modules (with feedback).
+        :return: for nooLite-F command returns array which contains command result and module info for each module that are binded with selected channel. For nooLite modules returns nothing.
+        """
         responses = self.send_module_command(channel, Command.SERVICE, broadcast, mode)
         return self.handle_command_responses(responses)
 
