@@ -46,6 +46,7 @@ Some commands require additional parameters. For more details see inline help.
 
 
 In response for each command returns:
+
 * for **nooLite-F** modules returns array which contains command result and module info for each module that are binded with selected channel.
 * for **nooLite** modules returns nothing.
 
