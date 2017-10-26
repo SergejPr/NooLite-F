@@ -1,5 +1,3 @@
-from NooLite_F.NooLiteService import NooLiteService, ModuleInfo, ModuleState, ModuleMode, BrightnessDirection
-from NooLite_F.Modules import Switch, Dimmer, RGBLed, ModuleType
-
-
+from NooLite_F.NooLiteFController import ModuleType, ModuleState, ModuleMode, ModuleInfo, BrightnessDirection
+from NooLite_F.Modules import Switch, ExtendedSwitch, Dimmer, RGBLed
 
