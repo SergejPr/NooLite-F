@@ -2,8 +2,42 @@ NooLite-F
 =========
 
 Python module to work with NooLite-F (MTRF-64-USB)
+There are possible three levels of usage:
 
-Supported commands:
+Low level of usage.
+-------------------
+You can work directly with adapter::
+
+    adapter = MTRF64USBAdapter("COM3")
+
+    request = Request()
+    request.action = Action.SEND_COMMAND
+    request.mode = Mode.TX
+    request.channel = 60
+    request.command = Command.TEMPORARY_ON
+    request.format = 6
+    request.data[0] = 1
+
+    adapter.open()
+
+    response = adapter.send_request(request)
+
+    adapter.close()
+
+    print(response)
+
+**Note** Request and response directly maps to low-level api for adapter.
+You can find more details about MTRF-64-USB api on official NooLite site: https://www.noo.com.by/
+
+Middle level of usage.
+----------------------
+You can use MTRF64Controller and abstract from manual request data creating. Just call appropriate function::
+
+    controller = MTRF64Controller("COM3")
+    controller.set_brightness(channel=60, brightness=0.3, module_type=ModuleType.NOOLITE)
+
+
+Controller supports following commands:
 
 * on - turn on the module
 * off - turn off the module
@@ -40,7 +74,7 @@ Each command can accept following parameters:
 
 * channel - the number of the channel for command. The command will be send to all modules that are binded with selected channel.
 * broadcast - broadcast mode for command. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False)
-* mode - mode of the command sending. TX - for nooLite module (without feedback), TX_F - for nooLite-F modules (with feedback).
+* module_type - type of module assigned to the specified channel. It is need to determine correct adapter mode for command sending. **Note:** NooLite-F can accept commands sending in NooLite mode.
 
 Some commands require additional parameters. For more details see inline help.
 
@@ -62,34 +96,22 @@ If command result is False, then module info is None.::
 
     [(False, None)]
 
+
+High level of usage.
+--------------------
+You can use special classes that are wrappers around controller. Each class is representation of the
+concrete module or modules assigned with specific channel::
+
+    controller = MTRF64Controller("COM3")
+    dimmer = Dimmer(controller, 62, ModuleType.NOOLITE)
+    dimmer.set_brightness(0.4)
+
+    switch = Switch(controller, 60, ModuleType.NOOLITE)
+    switch.on()
+
+
+
 Note
 ====
 
-Tested with MTRF-64-USB adapter and SLF-1-300, SD-1-180, SU-1-500 modules.
-
-Example
-=======
-
-Example of usage::
-
-    noolite = NooLiteService(port="COM3")
-    noolite.on(1)
-    noolite.set_brightness(1, 0.7)
-    noolite.off(1)
-
-    noolite.on(2, mode = Mode.TX)
-    noolite.set_brightness(2, 0.7, mode = Mode.TX)
-    noolite.off(2)
-
-or::
-
-    module = Dimmer("COM3", 1, ModuleType.NOOLITE_F, true)
-    module.on()
-    module.set_brightness(0.7)
-    module.off()
-
-    module = Dimmer("COM3", 2, ModuleType.NOOLITE)
-    module.on()
-    module.set_brightness(0.7)
-    module.off()
-
+Tested with MTRF-64-USB adapter and SLF-1-300 (NooLite-F), SD-1-180 (NooLite), SU-1-500 (NooLite) modules.
