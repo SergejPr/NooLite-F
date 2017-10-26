@@ -7,7 +7,7 @@ with io.open('README.rst', encoding="utf-8") as readme_file:
 setup(
     name="NooLite_F",
     packages=["NooLite_F"],
-    version="0.0.4",
+    version="0.0.5",
     license="MIT License",
     description="Module to work with NooLite/NooLite-F modules via MTRF-64-USB adapter",
     long_description=long_description,
