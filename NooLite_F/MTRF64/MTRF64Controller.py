@@ -281,3 +281,11 @@ class MTRF64Controller(NooLiteFController):
                     listener.switch_rgb_mode()
                 elif input_data.command == Command.SPEED_MODE:
                     listener.switch_rgb_mode_speed()
+                elif input_data.command == Command.BRIGHT_REG:
+                    if input_data.format == 1:
+                        if input_data.data[0] & 0x80 == 0x80:
+                            direction = BrightnessDirection.UP
+                        else:
+                            direction = BrightnessDirection.DOWN
+                        speed = (input_data.data[0] & 0x7F) / 127
+                        listener.brightness_tune_custom(direction, speed)
