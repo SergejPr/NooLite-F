@@ -1,6 +1,10 @@
 from enum import IntEnum
 from serial import Serial
 from struct import Struct
+from time import sleep
+
+from threading import *
+from queue import Queue, Empty
 
 
 class Command(IntEnum):
@@ -59,14 +63,14 @@ class Action(IntEnum):
     CLEAR_CHANNEL = 5,
     CLEAR_MEMORY = 6,
     UNBIND_ADDRESS_FROM_CHANNEL = 7,
-    SEND_COMMAND_BY_ADDRESS = 8
+    SEND_COMMAND_BY_ID = 8
 
 
 class ResponseException(Exception):
     """Base class for response exceptions."""
 
 
-class Request(object):
+class OutgoingData(object):
     mode: Mode = Mode.TX
     action: Action = Action.SEND_COMMAND
     channel: int = 0
@@ -80,7 +84,7 @@ class Request(object):
             .format(id(self), self.mode, self.action, self.channel, self.command, self.format, self.data, self.id)
 
 
-class Response(object):
+class IncomingData(object):
     mode: Mode = None
     status: ResponseCode = None
     channel: int = None
@@ -91,55 +95,62 @@ class Response(object):
     id: int = None
 
     def __repr__(self):
-        return "<Response (0x{0:x}), mode: {1}, status: {2}, channel: {3:d}, command: {4:d}, format: {5:d}, data: {6}, id: 0x{7:x}>"\
-            .format(id(self), self.mode, self.status, self.channel, self.command, self.format, self.data, self.id)
+        return "<Response (0x{0:x}), mode: {1}, status: {2}, packet_count: {3} channel: {4:d}, command: {5:d}, format: {6:d}, data: {7}, id: 0x{8:x}>"\
+            .format(id(self), self.mode, self.status, self.count, self.channel, self.command, self.format, self.data, self.id)
 
 
 class MTRF64USBAdapter(object):
-    _packetSize = 17
-    _port = None
-    _serial = Serial()
+    _packet_size = 17
+    _serial = None
+    _read_thread = None
+    _command_response_queue = Queue()
+    _incoming_queue = Queue()
 
     def __init__(self, port: str):
-        self._port = port
-
-        self._serial.port = self._port
-        self._serial.baudrate = 9600
-        self._serial.timeout = 3
-
-    def open(self):
+        self._serial = Serial(baudrate=9600)
+        self._serial.port = port
         self._serial.open()
 
-    def close(self):
-        self._serial.close()
+        self._read_thread = Thread(target=self._read_loop)
+        self._read_thread.daemon = True
+        self._read_thread.start()
 
-    def read_response(self) -> Response:
-        data = self._serial.read(self._packetSize)
-        response = self._parse(data)
-        print("Receive:\n - packet: {0},\n - response: {1}".format(data, response))
+    def get(self, timeout=None) -> IncomingData:
+        try:
+            response = self._incoming_queue.get(timeout=timeout)
+        except Empty:
+            response = None
+
         return response
 
-    def send_request(self, request: Request) -> [Response]:
+    def send(self, data: OutgoingData) -> [IncomingData]:
         responses = []
 
-        data = self._build(request)
-        print("Send:\n - request: {0},\n - packet: {1}".format(request, data))
+        packet = self._build(data)
+        print("Send:\n - request: {0},\n - packet: {1}".format(data, packet))
+
+        with self._command_response_queue.mutex:
+            self._command_response_queue.queue.clear()
+        self._serial.write(packet)
 
         try:
-            self._serial.write(data)
-
-            response = self.read_response()
-            responses.append(response)
-
-            while response.count > 0:
-                response = self.read_response()
+            while True:
+                response = self._command_response_queue.get(timeout=1)
                 responses.append(response)
+                if response.count == 0:
+                    break
 
-        except ResponseException:
-            raise
+        except Empty as err:
+            print("Error receiving response: {0}".format(err))
+
+        # For NooLite.TX we should make a bit delay. Adapter send the response without waiting until command was delivered.
+        # So if we send new command until previous command was sent to module, adapter will ignore new command. Note:
+        if data.mode == Mode.TX or data.mode == Mode.RX:
+            sleep(0.05)
 
         return responses
 
+    # Private
     def _crc(self, data) -> int:
         sum = 0
         for i in range(0, len(data)):
@@ -147,24 +158,45 @@ class MTRF64USBAdapter(object):
         sum = sum & 0xFF
         return sum
 
-    def _build(self, request: Request) -> bytes:
-        data = Struct(">BBBBBBB4sI")
-        packet = data.pack(171, request.mode, request.action, 0, request.channel, request.command, request.format, request.data, request.id)
+    def _build(self, data: OutgoingData) -> bytes:
+        format_begin = Struct(">BBBBBBB4sI")
+        format_end = Struct("BB")
 
-        data_end = Struct("BB")
-        packet_end = data_end.pack(self._crc(packet), 172)
+        packet = format_begin.pack(171, data.mode, data.action, 0, data.channel, data.command, data.format, data.data, data.id)
+        packet_end = format_end.pack(self._crc(packet), 172)
 
         packet = packet + packet_end
 
         return packet
 
-    def _parse(self, packet: bytes) -> Response:
-        data = Struct(">BBBBBBB4sIBB")
+    def _parse(self, packet: bytes) -> IncomingData:
+        if len(packet) != self._packet_size:
+            raise ResponseException("Invalid packet size: {0}".format(len(packet)))
 
-        response = Response()
-        start_byte, response.mode, response.status, response.count, response.channel, response.command, response.format, response.data, response.id, crc, stop_byte = data.unpack(packet)
+        format = Struct(">BBBBBBB4sIBB")
+
+        data = IncomingData()
+        start_byte, data.mode, data.status, data.count, data.channel, data.command, data.format, data.data, data.id, crc, stop_byte = format.unpack(packet)
 
         if (start_byte != 173) or (stop_byte != 174) or (crc != self._crc(packet[0:-2])):
             raise ResponseException("Invalid response")
 
-        return response
+        return data
+
+    def _read_loop(self):
+        while True:
+            packet = self._serial.read(self._packet_size)
+            try:
+                data = self._parse(packet)
+                print("Receive:\n - packet: {0},\n - data: {1}".format(packet, data))
+
+                if data.mode == Mode.TX or data.mode == Mode.TX_F:
+                    self._command_response_queue.put(data)
+                elif data.mode == Mode.RX or data.mode == Mode.RX_F:
+                    self._incoming_queue.put(data)
+                else:
+                    pass
+
+            except ResponseException as err:
+                print("Packet error: {0}".format(err))
+                pass

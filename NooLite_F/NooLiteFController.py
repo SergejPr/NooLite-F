@@ -37,6 +37,77 @@ class ModuleInfo(object):
             .format(id(self), self.id, self.type, self.firmware, self.state, self.brightness, self.mode)
 
 
+class RemoteListener(ABC):
+
+    @abstractmethod
+    def on(self):
+        pass
+
+    @abstractmethod
+    def off(self):
+        pass
+
+    @abstractmethod
+    def switch(self):
+        pass
+
+    @abstractmethod
+    def load_preset(self):
+        pass
+
+    @abstractmethod
+    def save_preset(self):
+        pass
+
+    @abstractmethod
+    def temporary_on(self, duration: int):
+        pass
+
+    @abstractmethod
+    def brightness_tune(self, direction: BrightnessDirection):
+        pass
+
+    @abstractmethod
+    def brightness_tune_back(self):
+        pass
+
+    @abstractmethod
+    def brightness_tune_stop(self):
+        pass
+
+    @abstractmethod
+    def brightness_tune_custom(self, direction: BrightnessDirection, speed: float):
+        pass
+
+    @abstractmethod
+    def brightness_tune_step(self, direction: BrightnessDirection, step: int = None):
+        pass
+
+    @abstractmethod
+    def set_brightness(self, brightness: float):
+        pass
+
+    @abstractmethod
+    def roll_rgb_color(self):
+        pass
+
+    @abstractmethod
+    def switch_rgb_color(self):
+        pass
+
+    @abstractmethod
+    def switch_rgb_mode(self):
+        pass
+
+    @abstractmethod
+    def switch_rgb_mode_speed(self):
+        pass
+
+    @abstractmethod
+    def set_rgb_brightness(self, red: float, green: float, blue: float):
+        pass
+
+
 class NooLiteFController(ABC):
 
     # Base power control
@@ -311,5 +382,14 @@ class NooLiteFController(ABC):
         :param broadcast: broadcast mode for command. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False)
         :param module_type: type of the module, used to determine adapter mode for send command (default - NOOLITE_F).
         :return: for nooLite-F command returns array which contains command result and module info for each module that are binded with selected channel. For nooLite modules returns nothing.
+        """
+        pass
+
+    @abstractmethod
+    def set_listener(self, channel: int, listener: RemoteListener):
+        """ Set the remote controls listener
+
+        :param channel: channel to which the listener will be assigned
+        :param listener: listener
         """
         pass
