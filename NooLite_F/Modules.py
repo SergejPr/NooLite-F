@@ -22,7 +22,7 @@ class Switch(object):
         return self._controller.off(self._channel, self._broadcast_mode, self._module_type)
 
     def switch(self) -> [(bool, ModuleInfo)]:
-        return self._controller.off(self._channel, self._broadcast_mode, self._module_type)
+        return self._controller.switch(self._channel, self._broadcast_mode, self._module_type)
 
     def load_preset(self) -> [(bool, ModuleInfo)]:
         return self._controller.load_preset(self._channel, self._broadcast_mode, self._module_type)
