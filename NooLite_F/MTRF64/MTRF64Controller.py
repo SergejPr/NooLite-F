@@ -231,8 +231,11 @@ class MTRF64Controller(NooLiteFController):
                 elif input_data.command == Command.SWITCH:
                     listener.switch()
                 elif input_data.command == Command.TEMPORARY_ON:
-                    # TODO: extract duration
-                    listener.temporary_on()
+                    if input_data.format == 5:
+                        delay = input_data.data[0]
+                    else:
+                        delay = input_data.data[0] + (input_data.data[1] << 15)
+                    listener.temporary_on(delay)
                 elif input_data.command == Command.BRIGHT_UP:
                     listener.brightness_tune(BrightnessDirection.UP)
                 elif input_data.command == Command.BRIGHT_DOWN:
@@ -240,16 +243,32 @@ class MTRF64Controller(NooLiteFController):
                 elif input_data.command == Command.BRIGHT_BACK:
                     listener.brightness_tune_back()
                 elif input_data.command == Command.BRIGHT_STEP_UP:
-                    # TODO: extract step
-                    listener.brightness_tune_step(BrightnessDirection.UP)
+                    if input_data.format == 1:
+                        step = input_data.data[0]
+                    else:
+                        step = None
+                    listener.brightness_tune_step(BrightnessDirection.UP, step)
                 elif input_data.command == Command.BRIGHT_STEP_DOWN:
-                    # TODO: extract step
-                    listener.brightness_tune_step(BrightnessDirection.DOWN)
+                    if input_data.format == 1:
+                        step = input_data.data[0]
+                    else:
+                        step = None
+                    listener.brightness_tune_step(BrightnessDirection.DOWN, step)
                 elif input_data.command == Command.STOP_BRIGHT:
                     listener.brightness_tune_stop()
                 elif input_data.command == Command.SET_BRIGHTNESS:
-                    # TODO: extract brightness
-                    listener.set_brightness(0.5)
+                    if input_data.format == 3:
+                        red = input_data.data[0] / 255
+                        green = input_data.data[1] / 255
+                        blue = input_data.data[2] / 255
+                        listener.set_rgb_brightness(red, green, blue)
+                    elif input_data.format == 1:
+                        level = (input_data.data[0] - 35) / 120
+                        if level < 0:
+                            level = 0
+                        elif level > 1:
+                            level = 1
+                        listener.set_brightness(level)
                 elif input_data.command == Command.LOAD_PRESET:
                     listener.load_preset()
                 elif input_data.command == Command.SAVE_PRESET:
