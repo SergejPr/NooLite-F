@@ -25,6 +25,17 @@ You can work directly with adapter::
 
     print(response)
 
+    request = Request()
+    request.action = Action.SEND_COMMAND_TO_ID
+    request.mode = Mode.TX_F
+    request.id = 0x5023
+    request.command = Command.SWITCH
+
+    response = adapter.send(request)
+
+    print(response)
+
+
 **Note** Request and response directly maps to low-level api for adapter.
 You can find more details about MTRF-64-USB api on official NooLite site: https://www.noo.com.by/
 
@@ -34,6 +45,8 @@ You can use MTRF64Controller and abstract from manual request data creating. Jus
 
     controller = MTRF64Controller("COM3")
     controller.set_brightness(channel=60, brightness=0.3, module_type=ModuleType.NOOLITE)
+
+    controller.switch(module_id=0x5435, module_type=ModuleType.NOOLITE-F)
 
 
 Controller supports following commands:
@@ -71,9 +84,10 @@ Controller supports following commands:
 
 Each command can accept following parameters:
 
-* channel - the number of the channel for command. The command will be send to all modules that are binded with selected channel.
-* broadcast - broadcast mode for command. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False)
-* module_type - type of module assigned to the specified channel. It is need to determine correct adapter mode for command sending. **Note:** NooLite-F can accept commands sending in NooLite mode.
+- module_id: the module id. The command will be send to module with specified id (used only for NOOLITE-F modules).
+- channel: the number of the channel. The command will be send to all modules that are binded with selected channel. If module_id is also specified then command will be send only to appropriate device in channel.
+- broadcast: broadcast mode. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False). If module_id is specified or mode is NOOLITE then broadcast parameter will be ignored.
+- module_type: type of the module, used to determine adapter mode for send command (default - NOOLITE_F).
 
 Some commands require additional parameters. For more details see inline help.
 
@@ -105,9 +119,11 @@ concrete module or modules assigned with specific channel::
     dimmer = Dimmer(controller, 62, ModuleType.NOOLITE)
     dimmer.set_brightness(0.4)
 
-    switch = Switch(controller, 60, ModuleType.NOOLITE)
+    switch = Switch(controller, channel=60, ModuleType.NOOLITE)
     switch.on()
 
+    switch = Switch(controller, module_id=0x5023, ModuleType.NOOLITE_F)
+    switch.switch()
 
 
 Receiving commands from remote controls
@@ -135,7 +151,7 @@ Using listener.
 Also you can create special listener and set it to controller::
 
     controller = MTRF64Controller("COM3")
-    switch = RGBLed(controller, 62, ModuleType.NOOLITE)
+    switch = RGBLed(controller, channel=62, ModuleType.NOOLITE)
 
 
     class Listener(RemoteListener):

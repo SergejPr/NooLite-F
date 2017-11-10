@@ -63,10 +63,11 @@ class Action(IntEnum):
     CLEAR_CHANNEL = 5,
     CLEAR_MEMORY = 6,
     UNBIND_ADDRESS_FROM_CHANNEL = 7,
-    SEND_COMMAND_BY_ID = 8
+    SEND_COMMAND_TO_ID_IN_CHANNEL = 8,
+    SEND_COMMAND_TO_ID = 9
 
 
-class ResponseException(Exception):
+class IncomingDataException(Exception):
     """Base class for response exceptions."""
 
 
@@ -171,7 +172,7 @@ class MTRF64USBAdapter(object):
 
     def _parse(self, packet: bytes) -> IncomingData:
         if len(packet) != self._packet_size:
-            raise ResponseException("Invalid packet size: {0}".format(len(packet)))
+            raise IncomingDataException("Invalid packet size: {0}".format(len(packet)))
 
         format = Struct(">BBBBBBB4sIBB")
 
@@ -179,7 +180,7 @@ class MTRF64USBAdapter(object):
         start_byte, data.mode, data.status, data.count, data.channel, data.command, data.format, data.data, data.id, crc, stop_byte = format.unpack(packet)
 
         if (start_byte != 173) or (stop_byte != 174) or (crc != self._crc(packet[0:-2])):
-            raise ResponseException("Invalid response")
+            raise IncomingDataException("Invalid response")
 
         return data
 
@@ -197,6 +198,6 @@ class MTRF64USBAdapter(object):
                 else:
                     pass
 
-            except ResponseException as err:
+            except IncomingDataException as err:
                 print("Packet error: {0}".format(err))
                 pass
