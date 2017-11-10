@@ -123,7 +123,7 @@ class MTRF64Controller(NooLiteFController):
     def brightness_tune_stop(self, channel: int, broadcast: bool = False, module_type: ModuleType = ModuleType.NOOLITE_F) -> [(bool, ModuleInfo)]:
         return self._send_module_command(channel, Command.STOP_BRIGHT, broadcast, self._command_mode(module_type))
 
-    def brightness_tune_custom(self, channel: int, direction: BrightnessDirection, speed: float, broadcast: bool = False, module_type: ModuleType = ModuleType.NOOLITE_F):
+    def brightness_tune_custom(self, channel: int, direction: BrightnessDirection, speed: float, broadcast: bool = False, module_type: ModuleType = ModuleType.NOOLITE_F) -> [(bool, ModuleInfo)]:
         if speed >= 1:
             value = 127
         elif speed <= 0:
@@ -139,7 +139,7 @@ class MTRF64Controller(NooLiteFController):
 
         return self._send_module_command(channel, Command.BRIGHT_REG, broadcast, self._command_mode(module_type), data, 1)
 
-    def brightness_tune_step(self, channel: int, direction: BrightnessDirection, step: int = None, broadcast: bool = False, module_type: ModuleType = ModuleType.NOOLITE_F):
+    def brightness_tune_step(self, channel: int, direction: BrightnessDirection, step: int = None, broadcast: bool = False, module_type: ModuleType = ModuleType.NOOLITE_F) -> [(bool, ModuleInfo)]:
         data: bytearray = None
         fmt: int = None
 

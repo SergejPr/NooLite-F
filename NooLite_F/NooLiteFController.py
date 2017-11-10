@@ -25,8 +25,8 @@ class BrightnessDirection(IntEnum):
 
 
 class ModuleInfo(object):
-    state: ModuleState
-    mode: ModuleMode
+    state: ModuleState = None
+    mode: ModuleMode = None
     brightness: float = None
     id: int = None
     firmware: int = None
@@ -213,7 +213,7 @@ class NooLiteFController(ABC):
         pass
 
     @abstractmethod
-    def brightness_tune_custom(self, channel: int, direction: BrightnessDirection, speed: float, broadcast: bool = False, module_type: ModuleType = ModuleType.NOOLITE_F):
+    def brightness_tune_custom(self, channel: int, direction: BrightnessDirection, speed: float, broadcast: bool = False, module_type: ModuleType = ModuleType.NOOLITE_F) -> [(bool, ModuleInfo)]:
         """ Start to increase/decrease brightness with a specified speed
 
         :param channel: the number of the channel for command. The command will be send to all modules that are binded with selected channel.
@@ -226,7 +226,7 @@ class NooLiteFController(ABC):
         pass
 
     @abstractmethod
-    def brightness_tune_step(self, channel: int, direction: BrightnessDirection, step: int = None, broadcast: bool = False, module_type: ModuleType = ModuleType.NOOLITE_F):
+    def brightness_tune_step(self, channel: int, direction: BrightnessDirection, step: int = None, broadcast: bool = False, module_type: ModuleType = ModuleType.NOOLITE_F) -> [(bool, ModuleInfo)]:
         """ Increase/decrease brightness once with a specified step
 
         :param channel: the number of the channel for command. The command will be send to all modules that are binded with selected channel.
