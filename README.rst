@@ -7,8 +7,8 @@ Send commands to modules
 Python module to work with NooLite-F (MTRF-64-USB)
 There are possible three levels of usage:
 
-Low level of usage.
--------------------
+Using adapter.
+--------------
 You can work directly with adapter::
 
     adapter = MTRF64USBAdapter("COM3")
@@ -39,8 +39,8 @@ You can work directly with adapter::
 **Note** Request and response directly maps to low-level api for adapter.
 You can find more details about MTRF-64-USB api on official NooLite site: https://www.noo.com.by/
 
-Middle level of usage.
-----------------------
+Using controller.
+-----------------
 You can use MTRF64Controller and abstract from manual request data creating. Just call appropriate function::
 
     controller = MTRF64Controller("COM3")
@@ -110,8 +110,8 @@ If command result is False, then module info is None.::
     [(False, None)]
 
 
-High level of usage.
---------------------
+Using module wrappers.
+----------------------
 You can use special classes that are wrappers around controller. Each class is representation of the
 concrete module or modules assigned with specific channel::
 
@@ -126,92 +126,129 @@ concrete module or modules assigned with specific channel::
     switch.switch()
 
 
+Available module wrappers:
+
+* Switch - supports on/off, toggle, preset. Also supports services methods for bind/unbind.
+* ExtendedSwitch - In additional to Switch, supports temporary on.
+* Dimmer - In additional to ExtendedSwitch supports brightness managing.
+* RGBLed - supports toggle, brightness management, rgb color management.
+
 Receiving commands from remote controls
 =======================================
 
-You can use two ways to read commands from remote controls.
+You can also use several ways to receive data from remote controllers and sensors.
 
 Using adapter.
 --------------
 
-You can read command from remote controls using MTRF64USBAdapter directly. All received commands are stored in internal queue.
-You can get stored commands by call get method::
+You can receive data from remote controllers using MTRF64USBAdapter directly. For it you should pass a listener method into adapter constructor.
+This method will be call each time when adapter get data from sensors or remote controls::
 
-    adapter = MTRF64USBAdapter("COM3")
+    def on_receive_data(incoming_data: IncomingData):
+        print("data: {0}".format(incoming_data))
 
-    response = adapter.get()
-
-    print(response)
-
+    adapter = MTRF64USBAdapter("COM3", on_receive_data)
 
 
-Using listener.
+Using controller
 ---------------
 
-Also you can create special listener and set it to controller::
+You can create special command listener and assign it with concrete channel in controller. The controller get incoming data, handle it and call appropriate method in listener.
+So you should not worry about it::
 
     controller = MTRF64Controller("COM3")
-    switch = RGBLed(controller, channel=62, ModuleType.NOOLITE)
+    switch = Dimmer(controller, channel=62, ModuleType.NOOLITE)
 
+    class MyRemoteController(RemoteControllerListener):
 
-    class Listener(RemoteListener):
-        def off(self):
-            switch.off()
-
-        def roll_rgb_color(self):
-            switch.roll_rgb_color()
-
-        def brightness_tune_stop(self):
-            switch.brightness_tune_stop()
-
-        def on(self):
+        def on_on(self):
             switch.on()
 
-        def temporary_on(self, duration: int):
-            pass
+        def on_off(self):
+            switch.off()
 
-        def set_brightness(self, brightness: float):
-            switch.set_brightness(brightness)
-
-        def brightness_tune_step(self, direction: BrightnessDirection, step: int = None):
-            pass
-
-        def brightness_tune_custom(self, direction: BrightnessDirection, speed: float):
-            pass
-
-        def brightness_tune_back(self):
-            switch.brightness_tune_back()
-
-        def save_preset(self):
-            switch.save_preset()
-
-        def brightness_tune(self, direction: BrightnessDirection):
-            switch.brightness_tune(direction)
-
-        def switch_rgb_mode_speed(self):
-            switch.switch_rgb_mode_speed()
-
-        def switch_rgb_mode(self):
-            switch.switch_rgb_mode()
-
-        def switch(self):
+        def on_switch(self):
             switch.switch()
 
-        def switch_rgb_color(self):
-            switch.switch_rgb_color()
+        def on_brightness_tune(self, direction: BrightnessDirection):
+            switch.brightness_tune(direction)
 
-        def load_preset(self):
-            switch.load_preset()
+        def on_brightness_tune_stop(self):
+            switch.brightness_tune_stop()
 
-        def set_rgb_brightness(self, red: float, green: float, blue: float):
-            switch.set_rgb_brightness(red, green, blue)
+        def on_brightness_tune_back(self):
+            switch.brightness_tune_back()
 
 
-    listener = Listener()
-    controller.set_listener(63, listener)
+    class MySensor(RemoteControllerListener):
+        def on_temp_humi(self, temp: float, humi: int, battery: BatteryState, analog: float):
+            print("temp: {0}, humidity: {1}".format(temp, humi))
+
+
+    remoteController = MyRemoteController()
+    sensor = MySensor()
+
+    controller.set_listener(1, remoteController)
+    controller.set_listener(2, remoteController)
+
+
+Using sensor wrappers.
+----------------------
+
+And in the end you can use a special wrappers around Controller and RemoteControllerListener. Just create it, set channel and appropriate listeners::
+
+    def on_temp(temp, humi, battery, analog):
+        print("temp: {0}, humi: {1}, battery_state: {2}, analog: {3}".format(temp, humi, battery, analog))
+
+    def on_battery():
+        print("battery")
+
+    def on_switch():
+        print("switch")
+
+    def on_tune_back():
+        print("tune back")
+
+    def on_tune_stop():
+        print("tune stop")
+
+    def on_roll_color():
+        print("roll color")
+
+    def on_switch_color():
+        print("switch color")
+
+    def on_switch_mode():
+        print("switch mode")
+
+    def on_switch_speed():
+        print("switch speed")
+
+
+controller = MTRF64Controller("COM3")
+
+tempSensor = TempHumiSensor(controller, 9, on_temp, on_battery)
+rgb = RGBRemoteController(controller, 63, on_switch, on_tune_back, on_tune_stop, on_roll_color, on_switch_color, on_switch_mode, on_switch_speed, on_battery)
+
+
+
+Available wrappers:
+
+* TempHumiSensor - supports receiving data from temperature and humidity sensors.
+* MovingDetector - supports receiving data from movement detector.
+* RemoteController - supports receiving commands from standard NooLite remote controllers.
+* RGBRemoteController - supports receiving commands from RGB Remote controller.
 
 
 Note
 ====
 
-Tested with MTRF-64-USB adapter and SLF-1-300 (NooLite-F), SD-1-180 (NooLite), SU-1-500 (NooLite) modules.
+Tested with MTRF-64-USB adapter and modules:
+* SLF-1-300 (NooLite-F, switch module)
+* SRF-1-3000 (NooLite-F, smart power socket)
+* SD-1-180 (NooLite, RGB Module)
+* SU-1-500 (NooLite, switch module)
+* PM112 (NooLite, moving detector)
+* PT111 (NooLite, temperature and humidity sensor)
+* PB211 (NooLite, remote controller)
+* PU112-2 (NooLite, RGB remote controller)
