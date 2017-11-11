@@ -5,7 +5,7 @@ from time import sleep
 
 from threading import *
 from queue import Queue, Empty
-from abc import ABC
+
 
 class Command(IntEnum):
     OFF = 0,
@@ -100,12 +100,6 @@ class IncomingData(object):
             .format(id(self), self.mode, self.status, self.count, self.channel, self.command, self.format, self.data, self.id)
 
 
-class IncomingDataListener(ABC):
-
-    def on_receive(self, incoming_data: IncomingData):
-        pass
-
-
 class MTRF64USBAdapter(object):
     _packet_size = 17
     _serial = None
@@ -128,7 +122,7 @@ class MTRF64USBAdapter(object):
         self._listener_thread.daemon = True
         self._listener_thread.start()
 
-    def set_listener(self, listener: IncomingDataListener):
+    def set_listener(self, listener):
         self._listener = listener
 
     def send(self, data: OutgoingData) -> [IncomingData]:
@@ -213,4 +207,4 @@ class MTRF64USBAdapter(object):
         while True:
             input_data = self._incoming_queue.get()
             if self._listener is not None:
-                self._listener.on_receive(input_data)
+                self._listener(input_data)

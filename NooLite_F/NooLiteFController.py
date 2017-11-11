@@ -44,55 +44,58 @@ class ModuleInfo(object):
 
 class RemoteListener(ABC):
 
-    def on(self):
+    def on_on(self):
         pass
 
-    def off(self):
+    def on_off(self):
         pass
 
-    def switch(self):
+    def on_switch(self):
         pass
 
-    def load_preset(self):
+    def on_load_preset(self):
         pass
 
-    def save_preset(self):
+    def on_save_preset(self):
         pass
 
-    def temporary_on(self, duration: int):
+    def on_temporary_on(self, duration: int):
         pass
 
-    def brightness_tune(self, direction: BrightnessDirection):
+    def on_brightness_tune(self, direction: BrightnessDirection):
         pass
 
-    def brightness_tune_back(self):
+    def on_brightness_tune_back(self):
         pass
 
-    def brightness_tune_stop(self):
+    def on_brightness_tune_stop(self):
         pass
 
-    def brightness_tune_custom(self, direction: BrightnessDirection, speed: float):
+    def on_brightness_tune_custom(self, direction: BrightnessDirection, speed: float):
         pass
 
-    def brightness_tune_step(self, direction: BrightnessDirection, step: int = None):
+    def on_brightness_tune_step(self, direction: BrightnessDirection, step: int = None):
         pass
 
-    def set_brightness(self, brightness: float):
+    def on_set_brightness(self, brightness: float):
         pass
 
-    def roll_rgb_color(self):
+    def on_roll_rgb_color(self):
         pass
 
-    def switch_rgb_color(self):
+    def on_switch_rgb_color(self):
         pass
 
-    def switch_rgb_mode(self):
+    def on_switch_rgb_mode(self):
         pass
 
-    def switch_rgb_mode_speed(self):
+    def on_switch_rgb_mode_speed(self):
         pass
 
-    def set_rgb_brightness(self, red: float, green: float, blue: float):
+    def on_set_rgb_brightness(self, red: float, green: float, blue: float):
+        pass
+
+    def on_temp_humi(self, temp: float, humi: int, battery: BatteryState, analog: float):
         pass
 
     def on_temp_humi(self, temp: float, humi: int, battery: BatteryState, analog: float):
@@ -402,7 +405,7 @@ class NooLiteFController(ABC):
 
     @abstractmethod
     def set_listener(self, channel: int, listener: RemoteListener):
-        """ Set the remote controls listener
+        """ Set the remote controls listener. To remove listener pass None to listener param.
 
         :param channel: channel to which the listener will be assigned
         :param listener: listener

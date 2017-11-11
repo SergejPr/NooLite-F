@@ -1,5 +1,5 @@
 from NooLite_F import NooLiteFController, ModuleInfo, ModuleState, ModuleMode, BrightnessDirection, ModuleType, RemoteListener, BatteryState
-from NooLite_F.MTRF64 import MTRF64USBAdapter, IncomingData, Command, Mode, Action, OutgoingData, ResponseCode, IncomingDataListener
+from NooLite_F.MTRF64 import MTRF64USBAdapter, IncomingData, Command, Mode, Action, OutgoingData, ResponseCode
 
 
 class OutgoingDataException(Exception):
@@ -24,7 +24,7 @@ class ModuleInfoParser(object):
         return info
 
 
-class MTRF64Controller(NooLiteFController, IncomingDataListener):
+class MTRF64Controller(NooLiteFController):
 
     _adapter = None
     _listener_map: {int: RemoteListener} = {}
@@ -36,7 +36,7 @@ class MTRF64Controller(NooLiteFController, IncomingDataListener):
 
     def __init__(self, port: str):
         self._adapter = MTRF64USBAdapter(port)
-        self._adapter.set_listener(self)
+        self._adapter.set_listener(self._on_receive)
 
     # Private
     def _command_mode(self, module_type: ModuleType) -> Mode:
@@ -221,7 +221,6 @@ class MTRF64Controller(NooLiteFController, IncomingDataListener):
         return self._send_module_command(module_id, channel, Command.SERVICE, broadcast, self._command_mode(module_type))
 
     def set_listener(self, channel: int, listener: RemoteListener):
-
         self._listener_map[channel] = listener
         print(self._listener_map)
 
@@ -232,62 +231,62 @@ class MTRF64Controller(NooLiteFController, IncomingDataListener):
         if listener is not None:
 
             if incoming_data.command == Command.ON:
-                listener.on()
+                listener.on_on()
             elif incoming_data.command == Command.OFF:
-                listener.off()
+                listener.on_off()
             elif incoming_data.command == Command.SWITCH:
-                listener.switch()
+                listener.on_switch()
             elif incoming_data.command == Command.TEMPORARY_ON:
                 if incoming_data.format == 5:
                     delay = incoming_data.data[0]
                 else:
                     delay = incoming_data.data[0] + (incoming_data.data[1] << 15)
-                listener.temporary_on(delay)
+                listener.on_temporary_on(delay)
             elif incoming_data.command == Command.BRIGHT_UP:
-                listener.brightness_tune(BrightnessDirection.UP)
+                listener.on_brightness_tune(BrightnessDirection.UP)
             elif incoming_data.command == Command.BRIGHT_DOWN:
-                listener.brightness_tune(BrightnessDirection.DOWN)
+                listener.on_brightness_tune(BrightnessDirection.DOWN)
             elif incoming_data.command == Command.BRIGHT_BACK:
-                listener.brightness_tune_back()
+                listener.on_brightness_tune_back()
             elif incoming_data.command == Command.BRIGHT_STEP_UP:
                 if incoming_data.format == 1:
                     step = incoming_data.data[0]
                 else:
                     step = None
-                listener.brightness_tune_step(BrightnessDirection.UP, step)
+                listener.on_brightness_tune_step(BrightnessDirection.UP, step)
             elif incoming_data.command == Command.BRIGHT_STEP_DOWN:
                 if incoming_data.format == 1:
                     step = incoming_data.data[0]
                 else:
                     step = None
-                listener.brightness_tune_step(BrightnessDirection.DOWN, step)
+                listener.on_brightness_tune_step(BrightnessDirection.DOWN, step)
             elif incoming_data.command == Command.STOP_BRIGHT:
-                listener.brightness_tune_stop()
+                listener.on_brightness_tune_stop()
             elif incoming_data.command == Command.SET_BRIGHTNESS:
                 if incoming_data.format == 3:
                     red = incoming_data.data[0] / 255
                     green = incoming_data.data[1] / 255
                     blue = incoming_data.data[2] / 255
-                    listener.set_rgb_brightness(red, green, blue)
+                    listener.on_set_rgb_brightness(red, green, blue)
                 elif incoming_data.format == 1:
                     level = (incoming_data.data[0] - 35) / 120
                     if level < 0:
                         level = 0
                     elif level > 1:
                         level = 1
-                    listener.set_brightness(level)
+                    listener.on_set_brightness(level)
             elif incoming_data.command == Command.LOAD_PRESET:
-                listener.load_preset()
+                listener.on_load_preset()
             elif incoming_data.command == Command.SAVE_PRESET:
-                listener.save_preset()
+                listener.on_save_preset()
             elif incoming_data.command == Command.ROLL_COLOR:
-                listener.roll_rgb_color()
+                listener.on_roll_rgb_color()
             elif incoming_data.command == Command.SWITCH_COLOR:
-                listener.switch_rgb_color()
+                listener.on_switch_rgb_color()
             elif incoming_data.command == Command.SWITCH_MODE:
-                listener.switch_rgb_mode()
+                listener.on_switch_rgb_mode()
             elif incoming_data.command == Command.SPEED_MODE:
-                listener.switch_rgb_mode_speed()
+                listener.on_switch_rgb_mode_speed()
             elif incoming_data.command == Command.BRIGHT_REG:
                 if incoming_data.format == 1:
                     if incoming_data.data[0] & 0x80 == 0x80:
@@ -295,27 +294,26 @@ class MTRF64Controller(NooLiteFController, IncomingDataListener):
                     else:
                         direction = BrightnessDirection.DOWN
                     speed = (incoming_data.data[0] & 0x7F) / 127
-                    listener.brightness_tune_custom(direction, speed)
+                    listener.on_brightness_tune_custom(direction, speed)
             elif incoming_data.command == Command.SENS_TEMP_HUMI:
                 # really from PT111 I get fmt = 7, but in specs is specify that fmt should be 3
+
                 if incoming_data.format == 7:
 
-                    battery_bit = incoming_data.data[1] & 0x80 >> 7
+                    battery_bit = (incoming_data.data[1] & 0x80) >> 7
                     if battery_bit:
                         battery = BatteryState.LOW
                     else:
                         battery = BatteryState.OK
 
-                    temp_hi = incoming_data.data[1] & 0x0F
                     temp_low = incoming_data.data[0]
-                    temp = temp_hi << 8 + temp_low
-
+                    temp_hi = incoming_data.data[1] & 0x0F
+                    temp = (temp_hi << 8) + temp_low
                     if temp > 0x0800:
                         temp = -(0x1000 - temp)
-
                     temp = temp / 10
 
-                    device_type = incoming_data.data[1] & 0x70 >> 4
+                    device_type = (incoming_data.data[1] & 0x70) >> 4
                     if device_type == 2:
                         humi = incoming_data.data[2]
                     else:
