@@ -98,9 +98,6 @@ class RemoteListener(ABC):
     def on_temp_humi(self, temp: float, humi: int, battery: BatteryState, analog: float):
         pass
 
-    def on_temp_humi(self, temp: float, humi: int, battery: BatteryState, analog: float):
-        pass
-
 
 class NooLiteFController(ABC):
 
