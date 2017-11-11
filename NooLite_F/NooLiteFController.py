@@ -42,7 +42,7 @@ class ModuleInfo(object):
             .format(id(self), self.id, self.type, self.firmware, self.state, self.brightness, self.mode)
 
 
-class RemoteListener(ABC):
+class RemoteControllerListener(ABC):
 
     def on_on(self):
         pass
@@ -96,6 +96,9 @@ class RemoteListener(ABC):
         pass
 
     def on_temp_humi(self, temp: float, humi: int, battery: BatteryState, analog: float):
+        pass
+
+    def on_battery_low(self):
         pass
 
 
@@ -401,7 +404,7 @@ class NooLiteFController(ABC):
         pass
 
     @abstractmethod
-    def set_listener(self, channel: int, listener: RemoteListener):
+    def set_listener(self, channel: int, listener: RemoteControllerListener):
         """ Set the remote controls listener. To remove listener pass None to listener param.
 
         :param channel: channel to which the listener will be assigned

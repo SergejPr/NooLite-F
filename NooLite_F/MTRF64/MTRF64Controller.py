@@ -1,4 +1,4 @@
-from NooLite_F import NooLiteFController, ModuleInfo, ModuleState, ModuleMode, BrightnessDirection, ModuleType, RemoteListener, BatteryState
+from NooLite_F import NooLiteFController, ModuleInfo, ModuleState, ModuleMode, BrightnessDirection, ModuleType, RemoteControllerListener, BatteryState
 from NooLite_F.MTRF64 import MTRF64USBAdapter, IncomingData, Command, Mode, Action, OutgoingData, ResponseCode
 
 
@@ -27,7 +27,7 @@ class ModuleInfoParser(object):
 class MTRF64Controller(NooLiteFController):
 
     _adapter = None
-    _listener_map: {int: RemoteListener} = {}
+    _listener_map: {int: RemoteControllerListener} = {}
 
     _mode_map = {
         ModuleType.NOOLITE: Mode.TX,
@@ -220,13 +220,13 @@ class MTRF64Controller(NooLiteFController):
     def service_mode_off(self, module_id: int = None, channel: int = None, broadcast: bool = False, module_type: ModuleType = ModuleType.NOOLITE_F) -> [(bool, ModuleInfo)]:
         return self._send_module_command(module_id, channel, Command.SERVICE, broadcast, self._command_mode(module_type))
 
-    def set_listener(self, channel: int, listener: RemoteListener):
+    def set_listener(self, channel: int, listener: RemoteControllerListener):
         self._listener_map[channel] = listener
         print(self._listener_map)
 
     # Listeners
     def _on_receive(self, incoming_data: IncomingData):
-        listener: RemoteListener = self._listener_map.get(incoming_data.channel, None)
+        listener: RemoteControllerListener = self._listener_map.get(incoming_data.channel, None)
 
         if listener is not None:
 
@@ -237,9 +237,10 @@ class MTRF64Controller(NooLiteFController):
             elif incoming_data.command == Command.SWITCH:
                 listener.on_switch()
             elif incoming_data.command == Command.TEMPORARY_ON:
+                delay = None
                 if incoming_data.format == 5:
                     delay = incoming_data.data[0]
-                else:
+                elif incoming_data.format == 6:
                     delay = incoming_data.data[0] + (incoming_data.data[1] << 15)
                 listener.on_temporary_on(delay)
             elif incoming_data.command == Command.BRIGHT_UP:
@@ -322,5 +323,7 @@ class MTRF64Controller(NooLiteFController):
                     analog = incoming_data.data[3] / 255
 
                     listener.on_temp_humi(temp, humi, battery, analog)
+            elif incoming_data.command == Command.BATTERY_LOW:
+                    listener.on_battery_low()
 
 
