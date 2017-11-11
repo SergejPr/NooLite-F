@@ -9,11 +9,11 @@ You can find more details about MTRF-64-USB api on official NooLite site:
 * https://www.noo.com.by/assets/files/PDF/MTRF-64-USB.pdf
 
 
-
 Send commands to modules
 ========================
 
 There are possible three ways of sending commands to modules:
+
 
 Using adapter.
 --------------
@@ -146,6 +146,7 @@ Receiving commands from remote controls
 =======================================
 
 You can also use several ways to receive data from remote controllers and sensors.
+
 
 Using adapter.
 --------------
