@@ -24,6 +24,11 @@ class BrightnessDirection(IntEnum):
     DOWN = 1,
 
 
+class BatteryState(IntEnum):
+    OK = 0,
+    LOW = 1,
+
+
 class ModuleInfo(object):
     state: ModuleState = None
     mode: ModuleMode = None
@@ -88,6 +93,9 @@ class RemoteListener(ABC):
         pass
 
     def set_rgb_brightness(self, red: float, green: float, blue: float):
+        pass
+
+    def on_temp_humi(self, temp: float, humi: int, battery: BatteryState, analog: float):
         pass
 
 

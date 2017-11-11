@@ -5,7 +5,7 @@ from time import sleep
 
 from threading import *
 from queue import Queue, Empty
-
+from abc import ABC
 
 class Command(IntEnum):
     OFF = 0,
@@ -100,12 +100,20 @@ class IncomingData(object):
             .format(id(self), self.mode, self.status, self.count, self.channel, self.command, self.format, self.data, self.id)
 
 
+class IncomingDataListener(ABC):
+
+    def on_receive(self, incoming_data: IncomingData):
+        pass
+
+
 class MTRF64USBAdapter(object):
     _packet_size = 17
     _serial = None
     _read_thread = None
     _command_response_queue = Queue()
     _incoming_queue = Queue()
+    _listener_thread = None
+    _listener = None
 
     def __init__(self, port: str):
         self._serial = Serial(baudrate=9600)
@@ -116,13 +124,12 @@ class MTRF64USBAdapter(object):
         self._read_thread.daemon = True
         self._read_thread.start()
 
-    def get(self, timeout=None) -> IncomingData:
-        try:
-            response = self._incoming_queue.get(timeout=timeout)
-        except Empty:
-            response = None
+        self._listener_thread = Thread(target=self._read_from_incoming_queue)
+        self._listener_thread.daemon = True
+        self._listener_thread.start()
 
-        return response
+    def set_listener(self, listener: IncomingDataListener):
+        self._listener = listener
 
     def send(self, data: OutgoingData) -> [IncomingData]:
         responses = []
@@ -201,3 +208,9 @@ class MTRF64USBAdapter(object):
             except IncomingDataException as err:
                 print("Packet error: {0}".format(err))
                 pass
+
+    def _read_from_incoming_queue(self):
+        while True:
+            input_data = self._incoming_queue.get()
+            if self._listener is not None:
+                self._listener.on_receive(input_data)
