@@ -35,8 +35,7 @@ class MTRF64Controller(NooLiteFController):
     }
 
     def __init__(self, port: str):
-        self._adapter = MTRF64USBAdapter(port)
-        self._adapter.set_listener(self._on_receive)
+        self._adapter = MTRF64USBAdapter(port, self._on_receive)
 
     # Private
     def _command_mode(self, module_type: ModuleType) -> Mode:

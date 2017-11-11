@@ -109,10 +109,12 @@ class MTRF64USBAdapter(object):
     _listener_thread = None
     _listener = None
 
-    def __init__(self, port: str):
+    def __init__(self, port: str, on_receive_data=None):
         self._serial = Serial(baudrate=9600)
         self._serial.port = port
         self._serial.open()
+
+        self._listener = on_receive_data
 
         self._read_thread = Thread(target=self._read_loop)
         self._read_thread.daemon = True
@@ -121,9 +123,6 @@ class MTRF64USBAdapter(object):
         self._listener_thread = Thread(target=self._read_from_incoming_queue)
         self._listener_thread.daemon = True
         self._listener_thread.start()
-
-    def set_listener(self, listener):
-        self._listener = listener
 
     def send(self, data: OutgoingData) -> [IncomingData]:
         responses = []
