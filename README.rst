@@ -7,6 +7,7 @@ https://www.noo.com.by/
 https://www.noo.com.by/assets/files/PDF/nooLite%20API_v1.0.pdf
 https://www.noo.com.by/assets/files/PDF/MTRF-64-USB.pdf
 
+
 Send commands to modules
 ========================
 
@@ -46,6 +47,7 @@ You can work directly with adapter::
 
 Using controller.
 -----------------
+
 You can use MTRF64Controller and abstract from manual request data creating. Just call appropriate function::
 
     controller = MTRF64Controller("COM3")
@@ -133,10 +135,10 @@ concrete module or modules assigned with specific channel::
 
 Available module wrappers:
 
-* Switch - supports on/off, toggle, preset. Also supports services methods for bind/unbind.
-* ExtendedSwitch - In additional to Switch, supports temporary on.
-* Dimmer - In additional to ExtendedSwitch supports brightness managing.
-* RGBLed - supports toggle, brightness management, rgb color management.
+* **Switch** - supports on/off, toggle, preset. Also supports services methods for bind/unbind.
+* **ExtendedSwitch** - In additional to Switch, supports temporary on.
+* **Dimmer** - In additional to ExtendedSwitch supports brightness managing.
+* **GBLed** - supports toggle, brightness management, rgb color management.
 
 Receiving commands from remote controls
 =======================================
@@ -156,7 +158,7 @@ This method will be call each time when adapter get data from sensors or remote 
 
 
 Using controller
----------------
+----------------
 
 You can create special command listener and assign it with concrete channel in controller. The controller get incoming data, handle it and call appropriate method in listener.
 So you should not worry about it::
@@ -239,10 +241,10 @@ rgb = RGBRemoteController(controller, 63, on_switch, on_tune_back, on_tune_stop,
 
 Available wrappers:
 
-* TempHumiSensor - supports receiving data from temperature and humidity sensors.
-* MovingDetector - supports receiving data from movement detector.
-* RemoteController - supports receiving commands from standard NooLite remote controllers.
-* RGBRemoteController - supports receiving commands from RGB Remote controller.
+* **TempHumiSensor** - supports receiving data from temperature and humidity sensors.
+* **MovingDetector** - supports receiving data from movement detector.
+* **RemoteController** - supports receiving commands from standard NooLite remote controllers.
+* **RGBRemoteController** - supports receiving commands from RGB Remote controller.
 
 
 Note
