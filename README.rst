@@ -53,9 +53,9 @@ Using controller
 You can use MTRF64Controller and abstract from manual request data creating. Just call appropriate function::
 
     controller = MTRF64Controller("COM3")
-    controller.set_brightness(channel=60, brightness=0.3, module_type=ModuleType.NOOLITE)
+    controller.set_brightness(channel=60, brightness=0.3, module_mode=ModuleType.NOOLITE)
 
-    controller.switch(module_id=0x5435, module_type=ModuleType.NOOLITE-F)
+    controller.switch(module_id=0x5435, module_mode=ModuleType.NOOLITE-F)
 
 
 Controller supports following commands:
@@ -96,7 +96,7 @@ Each command can accept following parameters:
 - module_id: the module id. The command will be send to module with specified id (used only for NOOLITE-F modules).
 - channel: the number of the channel. The command will be send to all modules that are binded with selected channel. If module_id is also specified then command will be send only to appropriate device in channel.
 - broadcast: broadcast mode. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False). If module_id is specified or mode is NOOLITE then broadcast parameter will be ignored.
-- module_type: type of the module, used to determine adapter mode for send command (default - NOOLITE_F).
+- module_mode: module work mode, used to determine adapter mode for send command (default - NOOLITE_F).
 
 Some commands require additional parameters. For more details see inline help.
 
