@@ -3,13 +3,6 @@ from NooLite_F import NooLiteFController, ModuleType, ModuleInfo, BrightnessDire
 
 class Switch(object):
 
-    _port: str
-    _channel: int
-    _module_type: ModuleType
-    _broadcast_mode: bool
-    _controller: NooLiteFController
-    _module_id: int
-
     def __init__(self, controller: NooLiteFController, module_id: int = None, channel: int = None, module_type: ModuleType = ModuleType.NOOLITE_F, broadcast_mode: bool = False):
         self._channel = channel
         self._module_type = module_type
