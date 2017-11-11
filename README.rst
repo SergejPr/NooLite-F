@@ -242,7 +242,6 @@ tempSensor = TempHumiSensor(controller, 9, on_temp, on_battery)
 rgb = RGBRemoteController(controller, 63, on_switch, on_tune_back, on_tune_stop, on_roll_color, on_switch_color, on_switch_mode, on_switch_speed, on_battery)
 
 
-
 Available wrappers:
 
 * **TempHumiSensor** - supports receiving data from temperature and humidity sensors.
@@ -255,6 +254,7 @@ Note
 ====
 
 Tested with MTRF-64-USB adapter and modules:
+
 * SLF-1-300 (NooLite-F, switch module)
 * SRF-1-3000 (NooLite-F, smart power socket)
 * SD-1-180 (NooLite, RGB Module)
