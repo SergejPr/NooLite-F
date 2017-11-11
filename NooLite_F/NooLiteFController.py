@@ -31,15 +31,15 @@ class BatteryState(IntEnum):
 
 class ModuleInfo(object):
     state: ModuleState = None
-    mode: ServiceModeState = None
+    service_mode: ServiceModeState = None
     brightness: float = None
     id: int = None
     firmware: int = None
     type: int = None
 
     def __repr__(self):
-        return "<ModuleInfo (0x{0:x}), id: 0x{1:x}, type: {2}, firmware: {3}, state: {4}, brightness: {5}, mode: {6}>"\
-            .format(id(self), self.id, self.type, self.firmware, self.state, self.brightness, self.mode)
+        return "<ModuleInfo (0x{0:x}), id: 0x{1:x}, type: {2}, firmware: {3}, state: {4}, brightness: {5}, service mode: {6}>"\
+            .format(id(self), self.id, self.type, self.firmware, self.state, self.brightness, self.service_mode)
 
 
 class RemoteControllerListener(ABC):

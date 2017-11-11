@@ -18,7 +18,7 @@ class ModuleInfoParser(object):
 
             if response.format == 0:
                 info.state = ModuleState(response.data[2] & 0x0F)
-                info.mode = ServiceModeState(response.data[2] & 0x80)
+                info.service_mode = ServiceModeState(response.data[2] & 0x80)
                 info.brightness = response.data[3] / 255
 
         return info
