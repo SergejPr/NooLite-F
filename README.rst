@@ -15,8 +15,8 @@ Send commands to modules
 There are possible three ways of sending commands to modules:
 
 
-Using adapter.
---------------
+Using adapter
+-------------
 You can work directly with adapter::
 
     adapter = MTRF64USBAdapter("COM3")
@@ -47,8 +47,8 @@ You can work directly with adapter::
 **Note** Request and response directly maps to low-level api for adapter.
 
 
-Using controller.
------------------
+Using controller
+----------------
 
 You can use MTRF64Controller and abstract from manual request data creating. Just call appropriate function::
 
@@ -119,8 +119,8 @@ If command result is False, then module info is None.::
     [(False, None)]
 
 
-Using module wrappers.
-----------------------
+Using module wrappers
+---------------------
 You can use special classes that are wrappers around controller. Each class is representation of the
 concrete module or modules assigned with specific channel::
 
@@ -148,8 +148,8 @@ Receiving commands from remote controls
 You can also use several ways to receive data from remote controllers and sensors.
 
 
-Using adapter.
---------------
+Using adapter listener
+----------------------
 
 You can receive data from remote controllers using MTRF64USBAdapter directly. For it you should pass a listener method into adapter constructor.
 This method will be call each time when adapter get data from sensors or remote controls::
@@ -160,8 +160,8 @@ This method will be call each time when adapter get data from sensors or remote 
     adapter = MTRF64USBAdapter("COM3", on_receive_data)
 
 
-Using controller
-----------------
+Using controller listener
+-------------------------
 
 You can create special command listener and assign it with concrete channel in controller. The controller get incoming data, handle it and call appropriate method in listener.
 So you should not worry about it::
@@ -202,8 +202,8 @@ So you should not worry about it::
     controller.set_listener(2, remoteController)
 
 
-Using sensor wrappers.
-----------------------
+Using sensor wrappers
+---------------------
 
 And in the end you can use a special wrappers around Controller and RemoteControllerListener. Just create it, set channel and appropriate listeners::
 
@@ -262,3 +262,4 @@ Tested with MTRF-64-USB adapter and modules:
 * PT111 (NooLite, temperature and humidity sensor)
 * PB211 (NooLite, remote controller)
 * PU112-2 (NooLite, RGB remote controller)
+
