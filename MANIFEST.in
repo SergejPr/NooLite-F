@@ -3,3 +3,4 @@ include LICENSE.txt
 
 # Include the data files
 recursive-include NooLite_F *
+recursive-exclude NooLite_F test.py
