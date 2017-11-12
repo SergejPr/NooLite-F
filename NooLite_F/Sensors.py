@@ -7,7 +7,11 @@ class Sensor(RemoteControllerListener):
         self._controller = controller
         self._channel = channel
         self._battery_low_listener = on_battery_low
-        self._controller.set_listener(channel, self)
+        self._controller.add_listener(channel, self)
+
+    def release(self):
+        self._controller.remove_listener(self._channel, self)
+        self._controller = None
 
     def on_battery_low(self):
         if self._battery_low_listener is not None:

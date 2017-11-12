@@ -108,6 +108,7 @@ class MTRF64USBAdapter(object):
     _incoming_queue = Queue()
     _listener_thread = None
     _listener = None
+    _is_released = False
 
     def __init__(self, port: str, on_receive_data=None):
         self._serial = Serial(baudrate=9600)
@@ -123,6 +124,12 @@ class MTRF64USBAdapter(object):
         self._listener_thread = Thread(target=self._read_from_incoming_queue)
         self._listener_thread.daemon = True
         self._listener_thread.start()
+
+    def release(self):
+        self._is_released = True
+        self._serial.close()
+        self._incoming_queue.put(None)
+        self._listener = None
 
     def send(self, data: OutgoingData) -> [IncomingData]:
         responses = []
@@ -187,6 +194,10 @@ class MTRF64USBAdapter(object):
     def _read_loop(self):
         while True:
             packet = self._serial.read(self._packet_size)
+
+            if self._is_released:
+                break
+
             try:
                 data = self._parse(packet)
                 print("Receive:\n - packet: {0},\n - data: {1}".format(packet, data))
@@ -202,8 +213,16 @@ class MTRF64USBAdapter(object):
                 print("Packet error: {0}".format(err))
                 pass
 
+        print("Thread 1 finished")
+
     def _read_from_incoming_queue(self):
         while True:
             input_data = self._incoming_queue.get()
+
+            if self._is_released:
+                break
+
             if self._listener is not None:
                 self._listener(input_data)
+
+        print("Thread 2 finished")

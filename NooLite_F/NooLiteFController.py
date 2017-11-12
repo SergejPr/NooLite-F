@@ -404,10 +404,26 @@ class NooLiteFController(ABC):
         pass
 
     @abstractmethod
-    def set_listener(self, channel: int, listener: RemoteControllerListener):
-        """ Set the remote controls listener. To remove listener pass None to listener param.
+    def add_listener(self, channel: int, listener: RemoteControllerListener):
+        """ Add the remote controls listener to channel.
 
         :param channel: channel to which the listener will be assigned
         :param listener: listener
         """
         pass
+
+    @abstractmethod
+    def remove_listener(self, channel: int, listener: RemoteControllerListener):
+        """ Remove the remote controls listener from channel.
+
+        :param channel: channel to which the listener will be assigned
+        :param listener: listener
+        """
+        pass
+
+    #
+    #
+    # on_on, on_off, on_switch, on_load_preset, on_save_preset, on_temporary_on, on_brightness_tune,
+    # on_brightness_tune_back, on_brightness_tune_stop, on_brightness_tune_custom, on_brightness_tune_step,
+    # on_set_brightness, on_roll_rgb_color, on_switch_rgb_color, on_switch_rgb_mode, on_switch_rgb_mode_speed,
+    # on_set_rgb_brightness, on_temp_humi, on_battery_low

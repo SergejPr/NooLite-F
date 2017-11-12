@@ -27,7 +27,7 @@ class ModuleInfoParser(object):
 class MTRF64Controller(NooLiteFController):
 
     _adapter = None
-    _listener_map: {int: RemoteControllerListener} = {}
+    _listener_map: {int: [RemoteControllerListener]} = {}
 
     _mode_map = {
         ModuleMode.NOOLITE: Mode.TX,
@@ -36,6 +36,11 @@ class MTRF64Controller(NooLiteFController):
 
     def __init__(self, port: str):
         self._adapter = MTRF64USBAdapter(port, self._on_receive)
+
+    def release(self):
+        self._adapter.release()
+        self._adapter = None
+        self._listener_map = {}
 
     # Private
     def _command_mode(self, module_mode: ModuleMode) -> Mode:
@@ -219,15 +224,32 @@ class MTRF64Controller(NooLiteFController):
     def service_mode_off(self, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> [(bool, ModuleInfo)]:
         return self._send_module_command(module_id, channel, Command.SERVICE, broadcast, self._command_mode(module_mode))
 
-    def set_listener(self, channel: int, listener: RemoteControllerListener):
-        self._listener_map[channel] = listener
+    def add_listener(self, channel: int, listener: RemoteControllerListener):
+        listeners: [RemoteControllerListener] = self._listener_map.get(channel, [])
+        listeners.append(listener)
+
+        self._listener_map[channel] = listeners
+        print(self._listener_map)
+
+    def remove_listener(self, channel: int, listener: RemoteControllerListener):
+        listeners: [RemoteControllerListener] = self._listener_map.get(channel, [])
+        listeners.remove(listener)
+        if len(listeners) == 0:
+            listeners = None
+
+        self._listener_map[channel] = listeners
         print(self._listener_map)
 
     # Listeners
     def _on_receive(self, incoming_data: IncomingData):
-        listener: RemoteControllerListener = self._listener_map.get(incoming_data.channel, None)
+        listeners: [RemoteControllerListener] = self._listener_map.get(incoming_data.channel, None)
 
-        if listener is not None:
+        if listeners is None:
+            return
+
+        for listener in listeners:
+            if listener is None:
+                return
 
             if incoming_data.command == Command.ON:
                 listener.on_on()
@@ -323,6 +345,5 @@ class MTRF64Controller(NooLiteFController):
 
                     listener.on_temp_humi(temp, humi, battery, analog)
             elif incoming_data.command == Command.BATTERY_LOW:
-                    listener.on_battery_low()
-
+                listener.on_battery_low()
 
