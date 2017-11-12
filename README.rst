@@ -244,7 +244,7 @@ And in the end you can use a special wrappers around Controller and RemoteContro
 Available wrappers:
 
 * **TempHumiSensor** - supports receiving data from temperature and humidity sensors.
-* **MovingDetector** - supports receiving data from movement detector.
+* **MotionSensor** - supports receiving data from motion sensor.
 * **RemoteController** - supports receiving commands from standard NooLite remote controllers.
 * **RGBRemoteController** - supports receiving commands from RGB Remote controller.
 

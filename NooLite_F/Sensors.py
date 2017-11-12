@@ -29,7 +29,7 @@ class TempHumiSensor(Sensor):
             self._temp_humi_listener(temp, humi, battery, analog)
 
 
-class MovementDetector(Sensor):
+class MotionSensor(Sensor):
 
     def __init__(self, controller: NooLiteFController, channel: int, on_movement, on_battery_low=None):
         super().__init__(controller, channel, on_battery_low)
