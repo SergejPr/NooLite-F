@@ -258,7 +258,7 @@ Tested with MTRF-64-USB adapter and modules:
 * SRF-1-3000 (NooLite-F, smart power socket)
 * SD-1-180 (NooLite, RGB Module)
 * SU-1-500 (NooLite, switch module)
-* PM112 (NooLite, moving detector)
+* PM112 (NooLite, motion sensor)
 * PT111 (NooLite, temperature and humidity sensor)
 * PB211 (NooLite, remote controller)
 * PU112-2 (NooLite, RGB remote controller)
