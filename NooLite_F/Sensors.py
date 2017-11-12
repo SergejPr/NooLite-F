@@ -31,13 +31,13 @@ class TempHumiSensor(Sensor):
 
 class MotionSensor(Sensor):
 
-    def __init__(self, controller: NooLiteFController, channel: int, on_movement, on_battery_low=None):
+    def __init__(self, controller: NooLiteFController, channel: int, on_motion, on_battery_low=None):
         super().__init__(controller, channel, on_battery_low)
-        self._movement_listener = on_movement
+        self._motion_listener = on_motion
 
     def on_temporary_on(self, duration: int):
-        if self._movement_listener is not None:
-            self._movement_listener()
+        if self._motion_listener is not None:
+            self._motion_listener(duration)
 
 
 class RemoteController(Sensor):
