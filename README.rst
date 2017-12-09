@@ -44,7 +44,7 @@ You can work directly with adapter::
     print(response)
 
 
-**Note** Request and response directly maps to low-level api for adapter.
+**Note:** Request and response directly maps to low-level api for adapter.
 
 
 Using controller
@@ -140,7 +140,7 @@ Available module wrappers:
 * **Switch** - supports on/off, toggle, preset. Also supports services methods for bind/unbind.
 * **ExtendedSwitch** - In additional to Switch, supports temporary on.
 * **Dimmer** - In additional to ExtendedSwitch supports brightness managing.
-* **GBLed** - supports toggle, brightness management, rgb color management.
+* **RGBLed** - supports toggle, brightness management, rgb color management.
 
 Receiving commands from remote controls
 =======================================
@@ -199,7 +199,7 @@ So you should not worry about it::
     sensor = MySensor()
 
     controller.add_listener(1, remoteController)
-    controller.add_listener(2, remoteController)
+    controller.add_listener(2, sensor)
 
 
 Using sensor wrappers
@@ -261,5 +261,6 @@ Tested with MTRF-64-USB adapter and modules:
 * PM112 (NooLite, motion sensor)
 * PT111 (NooLite, temperature and humidity sensor)
 * PB211 (NooLite, remote controller)
+* PK315 (Noolite, remote controller)
 * PU112-2 (NooLite, RGB remote controller)
 
