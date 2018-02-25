@@ -1,4 +1,5 @@
-from NooLite_F import NooLiteFController, ModuleMode, ModuleInfo, BrightnessDirection
+from NooLite_F import NooLiteFController, ModuleMode, BrightnessDirection, ModuleConfig, DimmerCorrectionConfig
+from NooLite_F import ResponseBaseInfo, ResponseExtraInfo, ResponseChannelsInfo, ResponseModuleConfig, ResponseDimmerCorrectionConfig
 
 
 class Switch(object):
@@ -10,95 +11,107 @@ class Switch(object):
         self._controller = controller
         self._module_id = module_id
 
-    def on(self) -> [(bool, ModuleInfo)]:
+    def on(self) -> [ResponseBaseInfo]:
         return self._controller.on(self._module_id, self._channel, self._broadcast_mode, self._module_mode)
 
-    def off(self) -> [(bool, ModuleInfo)]:
+    def off(self) -> [ResponseBaseInfo]:
         return self._controller.off(self._module_id, self._channel, self._broadcast_mode, self._module_mode)
 
-    def switch(self) -> [(bool, ModuleInfo)]:
+    def switch(self) -> [ResponseBaseInfo]:
         return self._controller.switch(self._module_id, self._channel, self._broadcast_mode, self._module_mode)
 
-    def load_preset(self) -> [(bool, ModuleInfo)]:
+    def load_preset(self) -> [ResponseBaseInfo]:
         return self._controller.load_preset(self._module_id, self._channel, self._broadcast_mode, self._module_mode)
 
-    def save_preset(self) -> [(bool, ModuleInfo)]:
+    def save_preset(self) -> [ResponseBaseInfo]:
         return self._controller.save_preset(self._module_id, self._channel, self._broadcast_mode, self._module_mode)
 
-    def read_state(self) -> [(bool, ModuleInfo)]:
+    def read_state(self) -> [ResponseBaseInfo]:
         return self._controller.read_state(self._module_id, self._channel, self._broadcast_mode, self._module_mode)
 
-    def bind(self) -> [(bool, ModuleInfo)]:
+    def read_extra_state(self) -> [ResponseExtraInfo]:
+        return self._controller.read_extra_state(self._module_id, self._channel, self._broadcast_mode, self._module_mode)
+
+    def read_channels_state(self) -> [ResponseChannelsInfo]:
+        return self._controller.read_channels_state(self._module_id, self._channel, self._broadcast_mode, self._module_mode)
+
+    def bind(self) -> [ResponseBaseInfo]:
         return self._controller.bind(self._module_id, self._channel, self._broadcast_mode, self._module_mode)
 
-    def unbind(self) -> [(bool, ModuleInfo)]:
-        return self._controller.bind(self._module_id, self._channel, self._broadcast_mode, self._module_mode)
+    def unbind(self) -> [ResponseBaseInfo]:
+        return self._controller.unbind(self._module_id, self._channel, self._broadcast_mode, self._module_mode)
 
-    def service_mode_on(self) -> [(bool, ModuleInfo)]:
-        return self._controller.service_mode_on(self._module_id, self._channel, self._broadcast_mode, self._module_mode)
+    def set_service_mode(self, state: bool) -> [ResponseBaseInfo]:
+        return self._controller.set_service_mode(state, self._module_id, self._channel, self._broadcast_mode, self._module_mode)
 
-    def service_mode_off(self) -> [(bool, ModuleInfo)]:
-        return self._controller.service_mode_off(self._module_id, self._channel, self._broadcast_mode, self._module_mode)
+    def read_config(self) -> [ResponseModuleConfig]:
+        return self._controller.read_module_config(self._module_id, self._channel, self._broadcast_mode, self._module_mode)
+
+    def write_config(self, config: ModuleConfig) -> [ResponseModuleConfig]:
+        return self._controller.write_module_config(config, self._module_id, self._channel, self._broadcast_mode, self._module_mode)
 
 
 class ExtendedSwitch(Switch):
 
-    def temporary_on(self, duration: int) -> [(bool, ModuleInfo)]:
+    def temporary_on(self, duration: int) -> [ResponseBaseInfo]:
         return self._controller.temporary_on(duration, self._module_id, self._channel, self._broadcast_mode, self._module_mode)
 
-    def enable_temporary_on(self) -> [(bool, ModuleInfo)]:
-        return self._controller.enable_temporary_on(self._module_id, self._channel, self._broadcast_mode, self._module_mode)
-
-    def disable_temporary_on(self) -> [(bool, ModuleInfo)]:
-        return self._controller.disable_temporary_on(self._module_id, self._channel, self._broadcast_mode, self._module_mode)
+    def set_temporary_on_mode(self, enabled: bool) -> [ResponseBaseInfo]:
+        return self._controller.set_temporary_on_mode(enabled, self._module_id, self._channel, self._broadcast_mode, self._module_mode)
 
 
 class Dimmer(ExtendedSwitch):
 
-    def brightness_tune(self, direction: BrightnessDirection) -> [(bool, ModuleInfo)]:
+    def brightness_tune(self, direction: BrightnessDirection) -> [ResponseBaseInfo]:
         return self._controller.brightness_tune(direction, self._module_id, self._channel, self._broadcast_mode, self._module_mode)
 
-    def brightness_tune_back(self) -> [(bool, ModuleInfo)]:
+    def brightness_tune_back(self) -> [ResponseBaseInfo]:
         return self._controller.brightness_tune_back(self._module_id, self._channel, self._broadcast_mode, self._module_mode)
 
-    def brightness_tune_stop(self) -> [(bool, ModuleInfo)]:
+    def brightness_tune_stop(self) -> [ResponseBaseInfo]:
         return self._controller.brightness_tune_stop(self._module_id, self._channel, self._broadcast_mode, self._module_mode)
 
-    def brightness_tune_custom(self, direction: BrightnessDirection, speed: float):
+    def brightness_tune_custom(self, direction: BrightnessDirection, speed: float) -> [ResponseBaseInfo]:
         return self._controller.brightness_tune_custom(direction, speed, self._module_id, self._channel, self._broadcast_mode, self._module_mode)
 
-    def brightness_tune_step(self, direction: BrightnessDirection, step: int = None):
+    def brightness_tune_step(self, direction: BrightnessDirection, step: int = None) -> [ResponseBaseInfo]:
         return self._controller.brightness_tune_step(direction, step, self._module_id, self._channel, self._broadcast_mode, self._module_mode)
 
-    def set_brightness(self, brightness: float) -> [(bool, ModuleInfo)]:
+    def set_brightness(self, brightness: float) -> [ResponseBaseInfo]:
         return self._controller.set_brightness(brightness, self._module_id, self._channel, self._broadcast_mode, self._module_mode)
+
+    def read_dimmer_correction(self) -> [ResponseDimmerCorrectionConfig]:
+        return self._controller.read_dimmer_correction(self._module_id, self._channel, self._broadcast_mode, self._module_mode)
+
+    def write_dimmer_correction(self, config: DimmerCorrectionConfig) -> [ResponseDimmerCorrectionConfig]:
+        return self._controller.write_dimmer_correction(config, self._module_id, self._channel, self._broadcast_mode, self._module_mode)
 
 
 class RGBLed(Switch):
 
-    def brightness_tune(self, direction: BrightnessDirection) -> [(bool, ModuleInfo)]:
+    def brightness_tune(self, direction: BrightnessDirection) -> [ResponseBaseInfo]:
         return self._controller.brightness_tune(direction, self._module_id, self._channel, self._broadcast_mode, self._module_mode)
 
-    def brightness_tune_back(self) -> [(bool, ModuleInfo)]:
+    def brightness_tune_back(self) -> [ResponseBaseInfo]:
         return self._controller.brightness_tune_back(self._module_id, self._channel, self._broadcast_mode, self._module_mode)
 
-    def brightness_tune_stop(self) -> [(bool, ModuleInfo)]:
+    def brightness_tune_stop(self) -> [ResponseBaseInfo]:
         return self._controller.brightness_tune_stop(self._module_id, self._channel, self._broadcast_mode, self._module_mode)
 
-    def set_brightness(self, brightness: float) -> [(bool, ModuleInfo)]:
+    def set_brightness(self, brightness: float) -> [ResponseBaseInfo]:
         return self._controller.set_brightness(brightness, self._module_id, self._channel, self._broadcast_mode, self._module_mode)
 
-    def roll_rgb_color(self) -> [(bool, ModuleInfo)]:
+    def roll_rgb_color(self) -> [ResponseBaseInfo]:
         return self._controller.roll_rgb_color(self._module_id, self._channel, self._broadcast_mode, self._module_mode)
 
-    def switch_rgb_color(self) -> [(bool, ModuleInfo)]:
+    def switch_rgb_color(self) -> [ResponseBaseInfo]:
         return self._controller.switch_rgb_color(self._module_id, self._channel, self._broadcast_mode, self._module_mode)
 
-    def switch_rgb_mode(self) -> [(bool, ModuleInfo)]:
+    def switch_rgb_mode(self) -> [ResponseBaseInfo]:
         return self._controller.switch_rgb_mode(self._module_id, self._channel, self._broadcast_mode, self._module_mode)
 
-    def switch_rgb_mode_speed(self) -> [(bool, ModuleInfo)]:
+    def switch_rgb_mode_speed(self) -> [ResponseBaseInfo]:
         return self._controller.switch_rgb_mode_speed(self._module_id, self._channel, self._broadcast_mode, self._module_mode)
 
-    def set_rgb_brightness(self, red: float, green: float, blue: float) -> [(bool, ModuleInfo)]:
+    def set_rgb_brightness(self, red: float, green: float, blue: float) -> [ResponseBaseInfo]:
         return self._controller.set_rgb_brightness(red, green, blue, self._module_id, self._channel, self._broadcast_mode, self._module_mode)

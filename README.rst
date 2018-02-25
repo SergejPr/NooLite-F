@@ -65,8 +65,7 @@ Controller supports following commands:
 * switch - switch module state
 
 * temporary_on - turn on the module for a specified time
-* enable_temporary_on - enable "temporary on" mode
-* disable_temporary_on - disable "temporary on" mode
+* set_temporary_on_mode - enable/disable "temporary on" mode
 
 * bright_tune - start to increase/decrease brightness
 * bright_tune_back - invert direction of the brightness change
@@ -85,11 +84,18 @@ Controller supports following commands:
 * set_rgb_brightness - set brightness for each rgb color **(only for RGB Led modules)**
 
 * read_state - read module state **(only for NooLite-F modules)**
+* read_extra_state - read additional module state **(only for NooLite-F modules)**
+* read_channels_state - read information about available channels for binding **(only for NooLite-F modules)**
+
+* read_module_config - read current module configuration **(only for NooLite-F modules)**
+* write_module_config - write new module configuration **(only for NooLite-F modules)**
+
+* read_dimmer_correction - read dimmer corrections values **(only for NooLite-F modules)**
+* write_dimmer_correction - write new dimmer corrections values **(only for NooLite-F modules)**
 
 * bind - send bind command to module
 * unbind - send unbind command to module
-* service_mode_on - turn on the service mode on module **(only for NooLite-F modules)**
-* service_mode_off - turn off the service mode on module **(only for NooLite-F modules)**
+* set_service_mode - turn on/off the service mode on module **(only for NooLite-F modules)**
 
 Each command can accept following parameters:
 
@@ -103,18 +109,18 @@ Some commands require additional parameters. For more details see inline help.
 
 In response for each command returns:
 
-* for **nooLite-F** modules returns array which contains command result and module info for each module that are binded with selected channel.
+* for **nooLite-F** modules returns array which contains command result, module info and it state for each module that are binded with selected channel.
 * for **nooLite** modules returns nothing.
 
-Command result equals True if command send successfully, otherwise False.
-Module info contains information about module: type, firmware version, state (on/off/temporary on), current brightness and bind mode (on/off)::
+Command result equals True if command send successfully, otherwise False. Module info contains information about module: module, id, type, firmware version. Module state contains information about module state: (on/off/temporary on), current brightness and bind mode (on/off)::
 
     [
-        (True, <ModuleInfo (0x2e25b90), id: 0x52e9, type: 1, hardware: 3, state: 1, brightness: 1.0, mode: 0>),
-        (True, <ModuleInfo (0x2e25a90), id: 0x52e3, type: 1, hardware: 3, state: 1, brightness: 1.0, mode: 0>)
+        [(True, <ModuleInfo (0x57f72f0), id: 0x5bce, type: 5, firmware: 0>, <ModuleBaseStateInfo (0x57f73d0), state: ModuleState.ON, brightness: 0.050980392156862744, service mode: ServiceModeState.BIND_OFF>)],
+        [(True, <ModuleInfo (0x57f72f0), id: 0x5bce, type: 5, firmware: 0>, <ModuleBaseStateInfo (0x57f73d1), state: ModuleState.ON, brightness: 0.050980392156862744, service mode: ServiceModeState.BIND_OFF>)]
     ]
 
-If command result is False, then module info is None.::
+Some state and config command can return extra info about module state/config.
+If command result is False, then module info and state are None.::
 
     [(False, None)]
 
@@ -258,6 +264,7 @@ Tested with MTRF-64-USB adapter and modules:
 * SRF-1-3000 (NooLite-F, smart power socket)
 * SD-1-180 (NooLite, RGB Module)
 * SU-1-500 (NooLite, switch module)
+* SUF-1-300 (NooLite-F, switch module)
 * PM112 (NooLite, motion sensor)
 * PT111 (NooLite, temperature and humidity sensor)
 * PB211 (NooLite, remote controller)

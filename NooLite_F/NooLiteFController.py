@@ -1,45 +1,113 @@
-
 from abc import ABC, abstractmethod
-from enum import IntEnum
+from enum import Enum
+from typing import Tuple, List
 
 
-class ModuleMode(IntEnum):
+
+class ModuleMode(Enum):
     NOOLITE = 0
     NOOLITE_F = 1
 
 
-class ModuleState(IntEnum):
-    OFF = 0,
-    ON = 1,
-    TEMPORARY_ON = 2
+class ModuleState(Enum):
+    OFF = 1
+    ON = 2
+    TEMPORARY_ON = 3
 
 
-class ServiceModeState(IntEnum):
-    BIND_OFF = 0,
-    BIND_ON = 1,
+class NooliteModeState(Enum):
+    DISABLED = 0
+    TEMPORARY_DISABLED = 2
+    ENABLED = 3
 
 
-class BrightnessDirection(IntEnum):
-    UP = 0,
-    DOWN = 1,
+class ServiceModeState(Enum):
+    BIND_OFF = 0
+    BIND_ON = 1
 
 
-class BatteryState(IntEnum):
-    OK = 0,
-    LOW = 1,
+class BrightnessDirection(Enum):
+    UP = 0
+    DOWN = 1
+
+
+class BatteryState(Enum):
+    OK = 0
+    LOW = 1
+
+
+class InputMode(Enum):
+    DISABLED = 0
+    SWITCH = 1
+    BUTTON = 2
+    BREAKER = 3
+
+
+class ModuleConfig(object):
+    dimmer_mode: bool = None
+    input_mode: InputMode = None
+    save_state_mode: bool = None
+    init_state: bool = None
+    noolite_support: bool = None
+    noolite_retranslation: bool = None
+
+    def __repr__(self):
+        return "<ModuleConfiguration (0x{0:x}), save state: {1}, dimer mode: {2}, noolite support: {3}, extra input mode: {4}, init state: {5}, retranslate noolite: {6}>"\
+            .format(id(self), self.save_state_mode, self.dimmer_mode, self.noolite_support, self.input_mode, self.init_state, self.noolite_retranslation)
+
+
+class DimmerCorrectionConfig(object):
+    min_level: float = 0.0
+    max_level: float = 1.0
+
+    def __repr__(self):
+        return "<BrightnessConfiguration (0x{0:x}), min level: {1}, max_level: {2}>"\
+            .format(id(self), self.min_level, self.max_level)
 
 
 class ModuleInfo(object):
-    state: ModuleState = None
-    service_mode: ServiceModeState = None
-    brightness: float = None
     id: int = None
     firmware: int = None
     type: int = None
 
     def __repr__(self):
-        return "<ModuleInfo (0x{0:x}), id: 0x{1:x}, type: {2}, firmware: {3}, state: {4}, brightness: {5}, service mode: {6}>"\
-            .format(id(self), self.id, self.type, self.firmware, self.state, self.brightness, self.service_mode)
+        return "<ModuleInfo (0x{0:x}), id: 0x{1:x}, type: {2}, firmware: {3}>"\
+            .format(id(self), self.id, self.type, self.firmware)
+
+
+class ModuleBaseStateInfo(object):
+    state: ModuleState = None
+    service_mode: ServiceModeState = None
+    brightness: float = None
+
+    def __repr__(self):
+        return "<ModuleBaseStateInfo (0x{0:x}), state: {1}, brightness: {2}, service mode: {3}>"\
+            .format(id(self), self.state, self.brightness, self.service_mode)
+
+
+class ModuleExtraStateInfo(object):
+    extra_input_state: bool = None
+    noolite_mode_state: NooliteModeState = None
+
+    def __repr__(self):
+        return "<ModuleExtraStateInfo (0x{0:x}), button state: {1}, noolite mode state: {2}>"\
+            .format(id(self), self.extra_input_state, self.noolite_mode_state)
+
+
+class ModuleChannelsStateInfo(object):
+    noolite_cells: int = None
+    noolite_f_cells: int = None
+
+    def __repr__(self):
+        return "<ModuleCellsStateInfo (0x{0:x}), noolite channels: {1}, noolite-f channels: {2}>"\
+            .format(id(self), self.noolite_cells, self.noolite_f_cells)
+
+
+ResponseBaseInfo = Tuple[bool, ModuleInfo, ModuleBaseStateInfo]
+ResponseExtraInfo = Tuple[bool, ModuleInfo, ModuleExtraStateInfo]
+ResponseChannelsInfo = Tuple[bool, ModuleInfo, ModuleChannelsStateInfo]
+ResponseModuleConfig = Tuple[bool, ModuleConfig]
+ResponseDimmerCorrectionConfig = Tuple[bool, DimmerCorrectionConfig]
 
 
 class RemoteControllerListener(ABC):
@@ -106,7 +174,7 @@ class NooLiteFController(ABC):
 
     # Base power control
     @abstractmethod
-    def off(self, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> [(bool, ModuleInfo)]:
+    def off(self, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
         """ Turn off the modules
 
         :param module_id: the module id. The command will be send to module with specified id (used only for NOOLITE-F modules).
@@ -118,7 +186,7 @@ class NooLiteFController(ABC):
         pass
 
     @abstractmethod
-    def on(self, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> [(bool, ModuleInfo)]:
+    def on(self, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
         """ Turn on the modules
 
         :param module_id: the module id. The command will be send to module with specified id (used only for NOOLITE-F modules).
@@ -130,7 +198,7 @@ class NooLiteFController(ABC):
         pass
 
     @abstractmethod
-    def temporary_on(self, duration: int, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> [(bool, ModuleInfo)]:
+    def temporary_on(self, duration: int, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
         """ Turn on the modules for a specified time interval
 
         :param module_id: the module id. The command will be send to module with specified id (used only for NOOLITE-F modules).
@@ -143,9 +211,10 @@ class NooLiteFController(ABC):
         pass
 
     @abstractmethod
-    def enable_temporary_on(self, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> [(bool, ModuleInfo)]:
-        """ Enable "temporary on" mode
+    def set_temporary_on_mode(self, enabled: bool, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
+        """ Enable/disable "temporary on" mode
 
+        :param enabled: new "temporary on" mode state (enable/disable).
         :param module_id: the module id. The command will be send to module with specified id (used only for NOOLITE-F modules).
         :param channel: the number of the channel. The command will be send to all modules that are binded with selected channel. If module_id is also specified then command will be send only to appropriate device in channel.
         :param broadcast: broadcast mode. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False). If module_id is specified or mode is NOOLITE then broadcast parameter will be ignored.
@@ -155,19 +224,7 @@ class NooLiteFController(ABC):
         pass
 
     @abstractmethod
-    def disable_temporary_on(self, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> [(bool, ModuleInfo)]:
-        """ Disable "temporary on" mode
-
-        :param module_id: the module id. The command will be send to module with specified id (used only for NOOLITE-F modules).
-        :param channel: the number of the channel. The command will be send to all modules that are binded with selected channel. If module_id is also specified then command will be send only to appropriate device in channel.
-        :param broadcast: broadcast mode. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False). If module_id is specified or mode is NOOLITE then broadcast parameter will be ignored.
-        :param module_mode: module work mode, used to determine adapter mode for send command (default - NOOLITE_F).
-        :return: for nooLite-F command returns array which contains command result and module info for each module that are binded with selected channel. For nooLite modules returns nothing.
-        """
-        pass
-
-    @abstractmethod
-    def switch(self, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> [(bool, ModuleInfo)]:
+    def switch(self, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
         """ Switch modules mode (on/off)
 
         :param module_id: the module id. The command will be send to module with specified id (used only for NOOLITE-F modules).
@@ -179,7 +236,7 @@ class NooLiteFController(ABC):
         pass
 
     @abstractmethod
-    def brightness_tune(self, direction: BrightnessDirection, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> [(bool, ModuleInfo)]:
+    def brightness_tune(self, direction: BrightnessDirection, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
         """ Start to increase/decrease brightness
 
         :param module_id: the module id. The command will be send to module with specified id (used only for NOOLITE-F modules).
@@ -192,7 +249,7 @@ class NooLiteFController(ABC):
         pass
 
     @abstractmethod
-    def brightness_tune_back(self, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> [(bool, ModuleInfo)]:
+    def brightness_tune_back(self, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
         """ Invert direction of the brightness change
 
         :param module_id: the module id. The command will be send to module with specified id (used only for NOOLITE-F modules).
@@ -204,7 +261,7 @@ class NooLiteFController(ABC):
         pass
 
     @abstractmethod
-    def brightness_tune_stop(self, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> [(bool, ModuleInfo)]:
+    def brightness_tune_stop(self, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
         """ Stop brightness changing
 
         :param module_id: the module id. The command will be send to module with specified id (used only for NOOLITE-F modules).
@@ -216,7 +273,7 @@ class NooLiteFController(ABC):
         pass
 
     @abstractmethod
-    def brightness_tune_custom(self, direction: BrightnessDirection, speed: float, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> [(bool, ModuleInfo)]:
+    def brightness_tune_custom(self, direction: BrightnessDirection, speed: float, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
         """ Start to increase/decrease brightness with a specified speed
 
         :param module_id: the module id. The command will be send to module with specified id (used only for NOOLITE-F modules).
@@ -230,7 +287,7 @@ class NooLiteFController(ABC):
         pass
 
     @abstractmethod
-    def brightness_tune_step(self, direction: BrightnessDirection, step: int = None, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> [(bool, ModuleInfo)]:
+    def brightness_tune_step(self, direction: BrightnessDirection, step: int = None, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
         """ Increase/decrease brightness once with a specified step
 
         :param module_id: the module id. The command will be send to module with specified id (used only for NOOLITE-F modules).
@@ -244,7 +301,7 @@ class NooLiteFController(ABC):
         pass
 
     @abstractmethod
-    def set_brightness(self, brightness: float, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> [(bool, ModuleInfo)]:
+    def set_brightness(self, brightness: float, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
         """ Set brightness
 
         :param module_id: the module id. The command will be send to module with specified id (used only for NOOLITE-F modules).
@@ -257,7 +314,7 @@ class NooLiteFController(ABC):
         pass
 
     @abstractmethod
-    def roll_rgb_color(self, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> [(bool, ModuleInfo)]:
+    def roll_rgb_color(self, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
         """ Start color changing (only for RGB Led modules)
 
         :param module_id: the module id. The command will be send to module with specified id (used only for NOOLITE-F modules).
@@ -269,7 +326,7 @@ class NooLiteFController(ABC):
         pass
 
     @abstractmethod
-    def switch_rgb_color(self, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> [(bool, ModuleInfo)]:
+    def switch_rgb_color(self, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
         """ Switch color (only for RGB Led modules)
 
         :param module_id: the module id. The command will be send to module with specified id (used only for NOOLITE-F modules).
@@ -281,7 +338,7 @@ class NooLiteFController(ABC):
         pass
 
     @abstractmethod
-    def switch_rgb_mode(self, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> [(bool, ModuleInfo)]:
+    def switch_rgb_mode(self, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
         """ Switch color changing modes (only for RGB Led modules)
 
         :param module_id: the module id. The command will be send to module with specified id (used only for NOOLITE-F modules).
@@ -293,7 +350,7 @@ class NooLiteFController(ABC):
         pass
 
     @abstractmethod
-    def switch_rgb_mode_speed(self, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> [(bool, ModuleInfo)]:
+    def switch_rgb_mode_speed(self, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
         """ Switch speed of the color changing (only for RGB Led modules)
 
         :param module_id: the module id. The command will be send to module with specified id (used only for NOOLITE-F modules).
@@ -305,7 +362,7 @@ class NooLiteFController(ABC):
         pass
 
     @abstractmethod
-    def set_rgb_brightness(self, red: float, green: float, blue: float, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> [(bool, ModuleInfo)]:
+    def set_rgb_brightness(self, red: float, green: float, blue: float, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
         """ Set brightness for each rgb color (only for RGB Led modules)
 
         :param module_id: the module id. The command will be send to module with specified id (used only for NOOLITE-F modules).
@@ -320,7 +377,7 @@ class NooLiteFController(ABC):
         pass
 
     @abstractmethod
-    def load_preset(self, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> [(bool, ModuleInfo)]:
+    def load_preset(self, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
         """ Load saved module state from preset
 
         :param module_id: the module id. The command will be send to module with specified id (used only for NOOLITE-F modules).
@@ -332,7 +389,7 @@ class NooLiteFController(ABC):
         pass
 
     @abstractmethod
-    def save_preset(self, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> [(bool, ModuleInfo)]:
+    def save_preset(self, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
         """ Save current module state as preset
 
         :param module_id: the module id. The command will be send to module with specified id (used only for NOOLITE-F modules).
@@ -344,8 +401,8 @@ class NooLiteFController(ABC):
         pass
 
     @abstractmethod
-    def read_state(self, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> [(bool, ModuleInfo)]:
-        """  Read module state (only for NooLite-F modules)
+    def read_state(self, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
+        """  Read module base state (only for NooLite-F modules)
 
         :param module_id: the module id. The command will be send to module with specified id (used only for NOOLITE-F modules).
         :param channel: the number of the channel. The command will be send to all modules that are binded with selected channel. If module_id is also specified then command will be send only to appropriate device in channel.
@@ -356,7 +413,81 @@ class NooLiteFController(ABC):
         pass
 
     @abstractmethod
-    def bind(self, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> [(bool, ModuleInfo)]:
+    def read_extra_state(self, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseExtraInfo]:
+        """  Read module extra state: extra input state, noolite mode state (only for NooLite-F modules)
+
+        :param module_id: the module id. The command will be send to module with specified id (used only for NOOLITE-F modules).
+        :param channel: the number of the channel. The command will be send to all modules that are binded with selected channel. If module_id is also specified then command will be send only to appropriate device in channel.
+        :param broadcast: broadcast mode. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False). If module_id is specified or mode is NOOLITE then broadcast parameter will be ignored.
+        :param module_mode: module work mode, used to determine adapter mode for send command (default - NOOLITE_F).
+        :return: for nooLite-F command returns array which contains command result and module extra info for each module that are binded with selected channel. For nooLite modules returns nothing.
+        """
+        pass
+
+    @abstractmethod
+    def read_channels_state(self, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseChannelsInfo]:
+        """  Read module available cells count for binding (only for NooLite-F modules)
+
+        :param module_id: the module id. The command will be send to module with specified id (used only for NOOLITE-F modules).
+        :param channel: the number of the channel. The command will be send to all modules that are binded with selected channel. If module_id is also specified then command will be send only to appropriate device in channel.
+        :param broadcast: broadcast mode. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False). If module_id is specified or mode is NOOLITE then broadcast parameter will be ignored.
+        :param module_mode: module work mode, used to determine adapter mode for send command (default - NOOLITE_F).
+        :return: for nooLite-F command returns array which contains command result and module cells count for each module that are binded with selected channel. For nooLite modules returns nothing.
+        """
+        pass
+
+    @abstractmethod
+    def read_module_config(self, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseModuleConfig]:
+        """  Read module configuration (only for NooLite-F modules)
+
+        :param module_id: the module id. The command will be send to module with specified id (used only for NOOLITE-F modules).
+        :param channel: the number of the channel. The command will be send to all modules that are binded with selected channel. If module_id is also specified then command will be send only to appropriate device in channel.
+        :param broadcast: broadcast mode. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False). If module_id is specified or mode is NOOLITE then broadcast parameter will be ignored.
+        :param module_mode: module work mode, used to determine adapter mode for send command (default - NOOLITE_F).
+        :return: for nooLite-F command returns array which contains command result and module configuration for each module that are binded with selected channel. For nooLite modules returns nothing.
+        """
+        pass
+
+    @abstractmethod
+    def write_module_config(self, config: ModuleConfig, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseModuleConfig]:
+        """  Write module configuration (only for NooLite-F modules)
+
+        :param config: the module configuration. If parameter in configuration has value None, then it won't changed.
+        :param module_id: the module id. The command will be send to module with specified id (used only for NOOLITE-F modules).
+        :param channel: the number of the channel. The command will be send to all modules that are binded with selected channel. If module_id is also specified then command will be send only to appropriate device in channel.
+        :param broadcast: broadcast mode. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False). If module_id is specified or mode is NOOLITE then broadcast parameter will be ignored.
+        :param module_mode: module work mode, used to determine adapter mode for send command (default - NOOLITE_F).
+        :return: for nooLite-F command returns array which contains command result and new module configuration for each module that are binded with selected channel. For nooLite modules returns nothing.
+        """
+        pass
+
+    @abstractmethod
+    def read_dimmer_correction(self, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseDimmerCorrectionConfig]:
+        """  Read dimmer correction values. Affects only on power modules in dimmer mode (only for NooLite-F modules)
+
+        :param module_id: the module id. The command will be send to module with specified id (used only for NOOLITE-F modules).
+        :param channel: the number of the channel. The command will be send to all modules that are binded with selected channel. If module_id is also specified then command will be send only to appropriate device in channel.
+        :param broadcast: broadcast mode. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False). If module_id is specified or mode is NOOLITE then broadcast parameter will be ignored.
+        :param module_mode: module work mode, used to determine adapter mode for send command (default - NOOLITE_F).
+        :return: for nooLite-F command returns array which contains command result and dimmer configuration for each module that are binded with selected channel. For nooLite modules returns nothing.
+        """
+        pass
+
+    @abstractmethod
+    def write_dimmer_correction(self, config: DimmerCorrectionConfig, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseDimmerCorrectionConfig]:
+        """  Writes dimmer correction values. Affects only on power modules in dimmer mode (only for NooLite-F modules)
+
+        :param config: new dimmer correction for dimmer mode.
+        :param module_id: the module id. The command will be send to module with specified id (used only for NOOLITE-F modules).
+        :param channel: the number of the channel. The command will be send to all modules that are binded with selected channel. If module_id is also specified then command will be send only to appropriate device in channel.
+        :param broadcast: broadcast mode. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False). If module_id is specified or mode is NOOLITE then broadcast parameter will be ignored.
+        :param module_mode: module work mode, used to determine adapter mode for send command (default - NOOLITE_F).
+        :return: for nooLite-F command returns array which contains command result and new brightness configuration for each module that are binded with selected channel. For nooLite modules returns nothing.
+        """
+        pass
+
+    @abstractmethod
+    def bind(self, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
         """  Send bind command to module
 
         :param module_id: the module id. The command will be send to module with specified id (used only for NOOLITE-F modules).
@@ -368,7 +499,7 @@ class NooLiteFController(ABC):
         pass
 
     @abstractmethod
-    def unbind(self, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> [(bool, ModuleInfo)]:
+    def unbind(self, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
         """  Send unbind command to module
 
         :param module_id: the module id. The command will be send to module with specified id (used only for NOOLITE-F modules).
@@ -380,21 +511,10 @@ class NooLiteFController(ABC):
         pass
 
     @abstractmethod
-    def service_mode_on(self, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> [(bool, ModuleInfo)]:
-        """  Turn on the service mode on module (only for NooLite-F modules)
+    def set_service_mode(self, state: bool, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
+        """  Turn on/off the service mode on module (only for NooLite-F modules)
 
-        :param module_id: the module id. The command will be send to module with specified id (used only for NOOLITE-F modules).
-        :param channel: the number of the channel. The command will be send to all modules that are binded with selected channel. If module_id is also specified then command will be send only to appropriate device in channel.
-        :param broadcast: broadcast mode. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False). If module_id is specified or mode is NOOLITE then broadcast parameter will be ignored.
-        :param module_mode: module work mode, used to determine adapter mode for send command (default - NOOLITE_F).
-        :return: for nooLite-F command returns array which contains command result and module info for each module that are binded with selected channel. For nooLite modules returns nothing.
-        """
-        pass
-
-    @abstractmethod
-    def service_mode_off(self, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> [(bool, ModuleInfo)]:
-        """  Turn off the service mode on module (only for NooLite-F modules)
-
+        :param state: new service mode state (on/off).
         :param module_id: the module id. The command will be send to module with specified id (used only for NOOLITE-F modules).
         :param channel: the number of the channel. The command will be send to all modules that are binded with selected channel. If module_id is also specified then command will be send only to appropriate device in channel.
         :param broadcast: broadcast mode. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False). If module_id is specified or mode is NOOLITE then broadcast parameter will be ignored.
@@ -420,10 +540,3 @@ class NooLiteFController(ABC):
         :param listener: listener
         """
         pass
-
-    #
-    #
-    # on_on, on_off, on_switch, on_load_preset, on_save_preset, on_temporary_on, on_brightness_tune,
-    # on_brightness_tune_back, on_brightness_tune_stop, on_brightness_tune_custom, on_brightness_tune_step,
-    # on_set_brightness, on_roll_rgb_color, on_switch_rgb_color, on_switch_rgb_mode, on_switch_rgb_mode_speed,
-    # on_set_rgb_brightness, on_temp_humi, on_battery_low
