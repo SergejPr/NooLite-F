@@ -55,7 +55,7 @@ You can use MTRF64Controller and abstract from manual request data creating. Jus
     controller = MTRF64Controller("COM3")
     controller.set_brightness(channel=60, brightness=0.3, module_mode=ModuleMode.NOOLITE)
 
-    controller.switch(module_id=0x5435, module_mode=ModuleMode.NOOLITE-F)
+    controller.switch(module_id=0x5435, module_mode=ModuleMode.NOOLITE_F)
 
 
 Controller supports following commands:
