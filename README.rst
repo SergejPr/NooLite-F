@@ -53,9 +53,9 @@ Using controller
 You can use MTRF64Controller and abstract from manual request data creating. Just call appropriate function::
 
     controller = MTRF64Controller("COM3")
-    controller.set_brightness(channel=60, brightness=0.3, module_mode=ModuleType.NOOLITE)
+    controller.set_brightness(channel=60, brightness=0.3, module_mode=ModuleMode.NOOLITE)
 
-    controller.switch(module_id=0x5435, module_mode=ModuleType.NOOLITE-F)
+    controller.switch(module_id=0x5435, module_mode=ModuleMode.NOOLITE-F)
 
 
 Controller supports following commands:
@@ -131,13 +131,13 @@ You can use special classes that are wrappers around controller. Each class is r
 concrete module or modules assigned with specific channel::
 
     controller = MTRF64Controller("COM3")
-    dimmer = Dimmer(controller, 62, ModuleType.NOOLITE)
+    dimmer = Dimmer(controller, channel=62, module_mode=ModuleMode.NOOLITE)
     dimmer.set_brightness(0.4)
 
-    switch = Switch(controller, channel=60, ModuleType.NOOLITE)
+    switch = Switch(controller, channel=60, module_mode=ModuleMode.NOOLITE)
     switch.on()
 
-    switch = Switch(controller, module_id=0x5023, ModuleType.NOOLITE_F)
+    switch = Switch(controller, module_id=0x5023, module_mode=ModuleMode.NOOLITE_F)
     switch.switch()
 
 
@@ -173,7 +173,7 @@ You can create special command listener and assign it with concrete channel in c
 So you should not worry about it::
 
     controller = MTRF64Controller("COM3")
-    switch = Dimmer(controller, channel=62, ModuleType.NOOLITE)
+    switch = Dimmer(controller, channel=62, module_mode=ModuleMode.NOOLITE)
 
     class MyRemoteController(RemoteControllerListener):
 
