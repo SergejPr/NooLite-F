@@ -206,6 +206,9 @@ So you should not worry about it::
 
     controller.add_listener(1, remoteController)
     controller.add_listener(2, sensor)
+    
+    while True:
+        sleep(60)
 
 
 Using sensor wrappers
