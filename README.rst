@@ -249,6 +249,9 @@ And in the end you can use a special wrappers around Controller and RemoteContro
     tempSensor = TempHumiSensor(controller, 9, on_temp, on_battery)
     rgb = RGBRemoteController(controller, 63, on_switch, on_tune_back, on_tune_stop, on_roll_color, on_switch_color, on_switch_mode, on_switch_speed, on_battery)
 
+    while True:
+        sleep(60)
+
 
 Available wrappers:
 
