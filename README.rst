@@ -122,7 +122,7 @@ Command result equals True if command send successfully, otherwise False. Module
 Some state and config command can return extra info about module state/config.
 If command result is False, then module info and state are None.::
 
-    [(False, None)]
+    [(False, None, None)]
 
 
 Using module wrappers
@@ -206,6 +206,9 @@ So you should not worry about it::
 
     controller.add_listener(1, remoteController)
     controller.add_listener(2, sensor)
+    
+    while True:
+        sleep(60)
 
 
 Using sensor wrappers
@@ -245,6 +248,9 @@ And in the end you can use a special wrappers around Controller and RemoteContro
 
     tempSensor = TempHumiSensor(controller, 9, on_temp, on_battery)
     rgb = RGBRemoteController(controller, 63, on_switch, on_tune_back, on_tune_stop, on_roll_color, on_switch_color, on_switch_mode, on_switch_speed, on_battery)
+
+    while True:
+        sleep(60)
 
 
 Available wrappers:
