@@ -217,8 +217,6 @@ class MTRF64Controller(NooLiteFController):
             value = 0
         else:
             value = int((255 * bright) + 0.5)
-        print(value)
-        print()
         return value
 
     # Commands
@@ -295,8 +293,6 @@ class MTRF64Controller(NooLiteFController):
             value = 0
         else:
             value = 35 + int((120 * brightness) + 0.5)
-
-        print(value)
 
         data: bytearray = bytearray(1)
         data[0] = value
@@ -415,18 +411,14 @@ class MTRF64Controller(NooLiteFController):
     def add_listener(self, channel: int, listener: RemoteControllerListener):
         listeners: [RemoteControllerListener] = self._listener_map.get(channel, [])
         listeners.append(listener)
-
         self._listener_map[channel] = listeners
-        print(self._listener_map)
 
     def remove_listener(self, channel: int, listener: RemoteControllerListener):
         listeners: [RemoteControllerListener] = self._listener_map.get(channel, [])
         listeners.remove(listener)
         if len(listeners) == 0:
             listeners = None
-
         self._listener_map[channel] = listeners
-        print(self._listener_map)
 
     # Listeners
     def _on_receive(self, incoming_data: IncomingData):

@@ -1,3 +1,5 @@
+import logging
+
 from enum import IntEnum
 from serial import Serial
 from struct import Struct
@@ -100,6 +102,11 @@ class IncomingData(object):
             .format(id(self), self.mode, self.status, self.count, self.channel, self.command, self.format, self.data, self.id)
 
 
+_LOGGER = logging.getLogger("MTRF64USBAdapter")
+_LOGGER.setLevel(logging.WARNING)
+_LOGGER.addHandler(logging.StreamHandler())
+
+
 class MTRF64USBAdapter(object):
     _packet_size = 17
     _serial = None
@@ -135,7 +142,7 @@ class MTRF64USBAdapter(object):
         responses = []
 
         packet = self._build(data)
-        print("Send:\n - request: {0},\n - packet: {1}".format(data, packet))
+        _LOGGER.debug("Send:\n - request: {0},\n - packet: {1}".format(data, packet))
 
         with self._command_response_queue.mutex:
             self._command_response_queue.queue.clear()
@@ -149,7 +156,7 @@ class MTRF64USBAdapter(object):
                     break
 
         except Empty as err:
-            print("Error receiving response: {0}".format(err))
+            _LOGGER.error("Error receiving response: {0}".format(err))
 
         # For NooLite.TX we should make a bit delay. Adapter send the response without waiting until command was delivered.
         # So if we send new command until previous command was sent to module, adapter will ignore new command. Note:
@@ -200,7 +207,7 @@ class MTRF64USBAdapter(object):
 
             try:
                 data = self._parse(packet)
-                print("Receive:\n - packet: {0},\n - data: {1}".format(packet, data))
+                _LOGGER.debug("Receive:\n - packet: {0},\n - data: {1}".format(packet, data))
 
                 if data.mode == Mode.TX or data.mode == Mode.TX_F:
                     self._command_response_queue.put(data)
@@ -210,10 +217,8 @@ class MTRF64USBAdapter(object):
                     pass
 
             except IncomingDataException as err:
-                print("Packet error: {0}".format(err))
+                _LOGGER.error("Packet error: {0}".format(err))
                 pass
-
-        print("Thread 1 finished")
 
     def _read_from_incoming_queue(self):
         while True:
@@ -224,5 +229,3 @@ class MTRF64USBAdapter(object):
 
             if self._listener is not None:
                 self._listener(input_data)
-
-        print("Thread 2 finished")
