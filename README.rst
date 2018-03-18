@@ -122,7 +122,7 @@ Command result equals True if command send successfully, otherwise False. Module
 Some state and config command can return extra info about module state/config.
 If command result is False, then module info and state are None.::
 
-    [(False, None)]
+    [(False, None, None)]
 
 
 Using module wrappers
