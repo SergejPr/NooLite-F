@@ -161,7 +161,7 @@ class MTRF64USBAdapter(object):
         # For NooLite.TX we should make a bit delay. Adapter send the response without waiting until command was delivered.
         # So if we send new command until previous command was sent to module, adapter will ignore new command. Note:
         if data.mode == Mode.TX or data.mode == Mode.RX:
-            sleep(0.1)
+            sleep(0.2)
 
         return responses
 
