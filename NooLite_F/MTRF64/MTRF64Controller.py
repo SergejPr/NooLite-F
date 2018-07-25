@@ -1,4 +1,4 @@
-from NooLite_F import NooLiteFController, BrightnessDirection, ModuleMode, RemoteControllerListener, BatteryState
+from NooLite_F import NooLiteFController, BrightnessDirection, BrightnessDirection, ModuleMode, RemoteControllerListener, BatteryState
 from NooLite_F import ModuleInfo, ModuleBaseStateInfo, ModuleExtraStateInfo, ModuleChannelsStateInfo, ModuleState, ServiceModeState, DimmerCorrectionConfig, ModuleConfig
 from NooLite_F import NooliteModeState, InputMode
 from NooLite_F import ResponseBaseInfo, ResponseExtraInfo, ResponseChannelsInfo, ResponseModuleConfig, ResponseDimmerCorrectionConfig
@@ -298,6 +298,78 @@ class MTRF64Controller(NooLiteFController):
         data[0] = value
 
         return self._send_module_base_command(module_id, channel, Command.SET_BRIGHTNESS, broadcast, self._command_mode(module_mode), data, 1)
+
+    def speed_tune(self, direction: BrightnessDirection, module_id: int = None, channel: int = None,
+                        broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[
+        ResponseBaseInfo]:
+        if direction == BrightnessDirection.UP:
+            command = Command.BRIGHT_UP
+        else:
+            command = Command.BRIGHT_DOWN
+        return self._send_module_base_command(module_id, channel, command, broadcast, self._command_mode(module_mode))
+
+    def speed_tune_back(self, module_id: int = None, channel: int = None, broadcast: bool = False,
+                             module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
+        return self._send_module_base_command(module_id, channel, Command.BRIGHT_BACK, broadcast,
+                                              self._command_mode(module_mode))
+
+    def speed_tune_stop(self, module_id: int = None, channel: int = None, broadcast: bool = False,
+                             module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
+        return self._send_module_base_command(module_id, channel, Command.STOP_BRIGHT, broadcast,
+                                              self._command_mode(module_mode))
+
+    def speed_tune_custom(self, direction: BrightnessDirection, speed: float, module_id: int = None,
+                               channel: int = None, broadcast: bool = False,
+                               module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
+        if speed >= 1:
+            value = 127
+        elif speed <= 0:
+            value = 0
+        else:
+            value = int((speed * 127) + 0.5)
+
+        if direction == BrightnessDirection.DOWN:
+            value = -value - 1
+
+        data: bytearray = bytearray(1)
+        data[0] = value & 0xFF
+
+        return self._send_module_base_command(module_id, channel, Command.BRIGHT_REG, broadcast,
+                                              self._command_mode(module_mode), data, 1)
+
+    def speed_tune_step(self, direction: BrightnessDirection, step: int = None, module_id: int = None,
+                             channel: int = None, broadcast: bool = False,
+                             module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
+        data: bytearray = None
+        fmt: int = None
+
+        if step is not None:
+            fmt = 1
+            data: bytearray = bytearray(1)
+            data[0] = step
+
+        if direction == BrightnessDirection.UP:
+            command = Command.BRIGHT_STEP_UP
+        else:
+            command = Command.BRIGHT_STEP_DOWN
+
+        return self._send_module_base_command(module_id, channel, command, broadcast, self._command_mode(module_mode),
+                                              data, fmt)
+
+    def set_speed(self, brightness: float, module_id: int = None, channel: int = None, broadcast: bool = False,
+                       module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
+        if brightness >= 1:
+            value = 155
+        elif brightness <= 0:
+            value = 0
+        else:
+            value = 35 + int((120 * brightness) + 0.5)
+
+        data: bytearray = bytearray(1)
+        data[0] = value
+
+        return self._send_module_base_command(module_id, channel, Command.SET_BRIGHTNESS, broadcast,
+                                              self._command_mode(module_mode), data, 1)
 
     def roll_rgb_color(self, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
         return self._send_module_base_command(module_id, channel, Command.ROLL_COLOR, broadcast, self._command_mode(module_mode))
