@@ -7,7 +7,7 @@ with io.open('README.rst', encoding="utf-8") as readme_file:
 setup(
     name="NooLite_F",
     packages=["NooLite_F", "NooLite_F.MTRF64"],
-    version="0.0.18",
+    version="0.0.19",
     license="MIT License",
     description="Module to work with NooLite/NooLite-F modules via MTRF-64-USB adapter",
     long_description=long_description,
@@ -18,7 +18,7 @@ setup(
     install_requires=["pyserial"],
     platforms="any",
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
         "Topic :: Software Development :: Libraries :: Python Modules",
         "Topic :: Home Automation",

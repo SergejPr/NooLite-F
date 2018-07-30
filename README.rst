@@ -147,6 +147,7 @@ Available module wrappers:
 * **ExtendedSwitch** - In additional to Switch, supports temporary on.
 * **Dimmer** - In additional to ExtendedSwitch supports brightness managing.
 * **RGBLed** - supports toggle, brightness management, rgb color management.
+* **Fan** - the same as **Dimmer**, uses for manage fans (thanks to mrukavishnikov ( https://github.com/mrukavishnikov )).
 
 Receiving commands from remote controls
 =======================================
