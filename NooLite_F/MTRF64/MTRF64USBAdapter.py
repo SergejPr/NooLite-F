@@ -150,7 +150,7 @@ class MTRF64USBAdapter(object):
 
         try:
             while True:
-                response = self._command_response_queue.get(timeout=1)
+                response = self._command_response_queue.get(timeout=2)
                 responses.append(response)
                 if response.count == 0:
                     break
@@ -161,7 +161,7 @@ class MTRF64USBAdapter(object):
         # For NooLite.TX we should make a bit delay. Adapter send the response without waiting until command was delivered.
         # So if we send new command until previous command was sent to module, adapter will ignore new command. Note:
         if data.mode == Mode.TX or data.mode == Mode.RX:
-            sleep(0.05)
+            sleep(0.2)
 
         return responses
 
