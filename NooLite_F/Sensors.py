@@ -1,4 +1,4 @@
-from NooLite_F import NooLiteFController, RemoteControllerListener, BatteryState, BrightnessDirection
+from NooLite_F import NooLiteFController, RemoteControllerListener, BatteryState, Direction
 
 
 class Sensor(RemoteControllerListener):
@@ -76,7 +76,7 @@ class RemoteController(Sensor):
         if self._save_preset_listener is not None:
             self._save_preset_listener()
 
-    def on_brightness_tune(self, direction: BrightnessDirection):
+    def on_brightness_tune(self, direction: Direction):
         if self._tune_listener is not None:
             self._tune_listener(direction)
 

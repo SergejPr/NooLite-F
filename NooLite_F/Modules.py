@@ -1,4 +1,4 @@
-from NooLite_F import NooLiteFController, ModuleMode, BrightnessDirection, ModuleConfig, DimmerCorrectionConfig
+from NooLite_F import NooLiteFController, ModuleMode, Direction, ModuleConfig, DimmerCorrectionConfig
 from NooLite_F import ResponseBaseInfo, ResponseExtraInfo, ResponseChannelsInfo, ResponseModuleConfig, ResponseDimmerCorrectionConfig
 
 
@@ -62,7 +62,7 @@ class ExtendedSwitch(Switch):
 
 class Dimmer(ExtendedSwitch):
 
-    def brightness_tune(self, direction: BrightnessDirection) -> [ResponseBaseInfo]:
+    def brightness_tune(self, direction: Direction) -> [ResponseBaseInfo]:
         return self._controller.brightness_tune(direction, self._module_id, self._channel, self._broadcast_mode, self._module_mode)
 
     def brightness_tune_back(self) -> [ResponseBaseInfo]:
@@ -71,10 +71,10 @@ class Dimmer(ExtendedSwitch):
     def brightness_tune_stop(self) -> [ResponseBaseInfo]:
         return self._controller.brightness_tune_stop(self._module_id, self._channel, self._broadcast_mode, self._module_mode)
 
-    def brightness_tune_custom(self, direction: BrightnessDirection, speed: float) -> [ResponseBaseInfo]:
+    def brightness_tune_custom(self, direction: Direction, speed: float) -> [ResponseBaseInfo]:
         return self._controller.brightness_tune_custom(direction, speed, self._module_id, self._channel, self._broadcast_mode, self._module_mode)
 
-    def brightness_tune_step(self, direction: BrightnessDirection, step: int = None) -> [ResponseBaseInfo]:
+    def brightness_tune_step(self, direction: Direction, step: int = None) -> [ResponseBaseInfo]:
         return self._controller.brightness_tune_step(direction, step, self._module_id, self._channel, self._broadcast_mode, self._module_mode)
 
     def set_brightness(self, brightness: float) -> [ResponseBaseInfo]:
@@ -89,23 +89,23 @@ class Dimmer(ExtendedSwitch):
 
 class Fan(ExtendedSwitch):
 
-    def speed_tune(self, direction: BrightnessDirection) -> [ResponseBaseInfo]:
+    def speed_tune(self, direction: Direction) -> [ResponseBaseInfo]:
         return self._controller.speed_tune(direction, self._module_id, self._channel, self._broadcast_mode, self._module_mode)
 
     def speed_tune_back(self) -> [ResponseBaseInfo]:
-        return self._controller.speed_tune_back(self._module_id, self._channel, self._broadcast_mode, self._module_mode)
+        return self._controller.brightness_tune_back(self._module_id, self._channel, self._broadcast_mode, self._module_mode)
 
     def speed_tune_stop(self) -> [ResponseBaseInfo]:
-        return self._controller.speed_tune_stop(self._module_id, self._channel, self._broadcast_mode, self._module_mode)
+        return self._controller.brightness_tune_stop(self._module_id, self._channel, self._broadcast_mode, self._module_mode)
 
-    def speed_tune_custom(self, direction: BrightnessDirection, speed: float) -> [ResponseBaseInfo]:
-        return self._controller.speed_tune_custom(direction, speed, self._module_id, self._channel, self._broadcast_mode, self._module_mode)
+    def speed_tune_custom(self, direction: Direction, speed: float) -> [ResponseBaseInfo]:
+        return self._controller.brightness_tune_custom(direction, speed, self._module_id, self._channel, self._broadcast_mode, self._module_mode)
 
-    def speed_tune_step(self, direction: BrightnessDirection, step: int = None) -> [ResponseBaseInfo]:
-        return self._controller.speed_tune_step(direction, step, self._module_id, self._channel, self._broadcast_mode, self._module_mode)
+    def speed_tune_step(self, direction: Direction, step: int = None) -> [ResponseBaseInfo]:
+        return self._controller.brightness_tune_step(direction, step, self._module_id, self._channel, self._broadcast_mode, self._module_mode)
 
-    def set_speed(self, brightness: float) -> [ResponseBaseInfo]:
-        return self._controller.set_speed(brightness, self._module_id, self._channel, self._broadcast_mode, self._module_mode)
+    def set_speed(self, speed: float) -> [ResponseBaseInfo]:
+        return self._controller.set_brightness(speed, self._module_id, self._channel, self._broadcast_mode, self._module_mode)
 
     def read_dimmer_correction(self) -> [ResponseDimmerCorrectionConfig]:
         return self._controller.read_dimmer_correction(self._module_id, self._channel, self._broadcast_mode, self._module_mode)
@@ -116,7 +116,7 @@ class Fan(ExtendedSwitch):
 
 class RGBLed(Switch):
 
-    def brightness_tune(self, direction: BrightnessDirection) -> [ResponseBaseInfo]:
+    def brightness_tune(self, direction: Direction) -> [ResponseBaseInfo]:
         return self._controller.brightness_tune(direction, self._module_id, self._channel, self._broadcast_mode, self._module_mode)
 
     def brightness_tune_back(self) -> [ResponseBaseInfo]:

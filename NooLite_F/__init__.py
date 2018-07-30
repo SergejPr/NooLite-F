@@ -1,4 +1,4 @@
-from NooLite_F.NooLiteFController import NooLiteFController, BrightnessDirection, RemoteControllerListener, BatteryState, ModuleMode
+from NooLite_F.NooLiteFController import NooLiteFController, Direction, RemoteControllerListener, BatteryState, ModuleMode
 from NooLite_F.NooLiteFController import ModuleInfo, ModuleBaseStateInfo, ModuleExtraStateInfo, ModuleChannelsStateInfo, ModuleState, ServiceModeState, InputMode, \
     DimmerCorrectionConfig, ModuleConfig, NooliteModeState
 from NooLite_F.NooLiteFController import ResponseBaseInfo, ResponseExtraInfo, ResponseChannelsInfo, ResponseModuleConfig, ResponseDimmerCorrectionConfig

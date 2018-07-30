@@ -1,4 +1,4 @@
-from NooLite_F import NooLiteFController, BrightnessDirection, BrightnessDirection, ModuleMode, RemoteControllerListener, BatteryState
+from NooLite_F import NooLiteFController, Direction, ModuleMode, RemoteControllerListener, BatteryState
 from NooLite_F import ModuleInfo, ModuleBaseStateInfo, ModuleExtraStateInfo, ModuleChannelsStateInfo, ModuleState, ServiceModeState, DimmerCorrectionConfig, ModuleConfig
 from NooLite_F import NooliteModeState, InputMode
 from NooLite_F import ResponseBaseInfo, ResponseExtraInfo, ResponseChannelsInfo, ResponseModuleConfig, ResponseDimmerCorrectionConfig
@@ -241,8 +241,8 @@ class MTRF64Controller(NooLiteFController):
     def switch(self, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
         return self._send_module_base_command(module_id, channel, Command.SWITCH, broadcast, self._command_mode(module_mode))
 
-    def brightness_tune(self, direction: BrightnessDirection, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
-        if direction == BrightnessDirection.UP:
+    def brightness_tune(self, direction: Direction, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
+        if direction == Direction.UP:
             command = Command.BRIGHT_UP
         else:
             command = Command.BRIGHT_DOWN
@@ -254,7 +254,7 @@ class MTRF64Controller(NooLiteFController):
     def brightness_tune_stop(self, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
         return self._send_module_base_command(module_id, channel, Command.STOP_BRIGHT, broadcast, self._command_mode(module_mode))
 
-    def brightness_tune_custom(self, direction: BrightnessDirection, speed: float, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
+    def brightness_tune_custom(self, direction: Direction, speed: float, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
         if speed >= 1:
             value = 127
         elif speed <= 0:
@@ -262,7 +262,7 @@ class MTRF64Controller(NooLiteFController):
         else:
             value = int((speed * 127) + 0.5)
 
-        if direction == BrightnessDirection.DOWN:
+        if direction == Direction.DOWN:
             value = -value - 1
 
         data: bytearray = bytearray(1)
@@ -270,7 +270,7 @@ class MTRF64Controller(NooLiteFController):
 
         return self._send_module_base_command(module_id, channel, Command.BRIGHT_REG, broadcast, self._command_mode(module_mode), data, 1)
 
-    def brightness_tune_step(self, direction: BrightnessDirection, step: int = None, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
+    def brightness_tune_step(self, direction: Direction, step: int = None, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
         data: bytearray = None
         fmt: int = None
 
@@ -279,7 +279,7 @@ class MTRF64Controller(NooLiteFController):
             data: bytearray = bytearray(1)
             data[0] = step
 
-        if direction == BrightnessDirection.UP:
+        if direction == Direction.UP:
             command = Command.BRIGHT_STEP_UP
         else:
             command = Command.BRIGHT_STEP_DOWN
@@ -298,78 +298,6 @@ class MTRF64Controller(NooLiteFController):
         data[0] = value
 
         return self._send_module_base_command(module_id, channel, Command.SET_BRIGHTNESS, broadcast, self._command_mode(module_mode), data, 1)
-
-    def speed_tune(self, direction: BrightnessDirection, module_id: int = None, channel: int = None,
-                        broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[
-        ResponseBaseInfo]:
-        if direction == BrightnessDirection.UP:
-            command = Command.BRIGHT_UP
-        else:
-            command = Command.BRIGHT_DOWN
-        return self._send_module_base_command(module_id, channel, command, broadcast, self._command_mode(module_mode))
-
-    def speed_tune_back(self, module_id: int = None, channel: int = None, broadcast: bool = False,
-                             module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
-        return self._send_module_base_command(module_id, channel, Command.BRIGHT_BACK, broadcast,
-                                              self._command_mode(module_mode))
-
-    def speed_tune_stop(self, module_id: int = None, channel: int = None, broadcast: bool = False,
-                             module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
-        return self._send_module_base_command(module_id, channel, Command.STOP_BRIGHT, broadcast,
-                                              self._command_mode(module_mode))
-
-    def speed_tune_custom(self, direction: BrightnessDirection, speed: float, module_id: int = None,
-                               channel: int = None, broadcast: bool = False,
-                               module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
-        if speed >= 1:
-            value = 127
-        elif speed <= 0:
-            value = 0
-        else:
-            value = int((speed * 127) + 0.5)
-
-        if direction == BrightnessDirection.DOWN:
-            value = -value - 1
-
-        data: bytearray = bytearray(1)
-        data[0] = value & 0xFF
-
-        return self._send_module_base_command(module_id, channel, Command.BRIGHT_REG, broadcast,
-                                              self._command_mode(module_mode), data, 1)
-
-    def speed_tune_step(self, direction: BrightnessDirection, step: int = None, module_id: int = None,
-                             channel: int = None, broadcast: bool = False,
-                             module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
-        data: bytearray = None
-        fmt: int = None
-
-        if step is not None:
-            fmt = 1
-            data: bytearray = bytearray(1)
-            data[0] = step
-
-        if direction == BrightnessDirection.UP:
-            command = Command.BRIGHT_STEP_UP
-        else:
-            command = Command.BRIGHT_STEP_DOWN
-
-        return self._send_module_base_command(module_id, channel, command, broadcast, self._command_mode(module_mode),
-                                              data, fmt)
-
-    def set_speed(self, brightness: float, module_id: int = None, channel: int = None, broadcast: bool = False,
-                       module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
-        if brightness >= 1:
-            value = 155
-        elif brightness <= 0:
-            value = 0
-        else:
-            value = 35 + int((120 * brightness) + 0.5)
-
-        data: bytearray = bytearray(1)
-        data[0] = value
-
-        return self._send_module_base_command(module_id, channel, Command.SET_BRIGHTNESS, broadcast,
-                                              self._command_mode(module_mode), data, 1)
 
     def roll_rgb_color(self, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
         return self._send_module_base_command(module_id, channel, Command.ROLL_COLOR, broadcast, self._command_mode(module_mode))
@@ -517,9 +445,9 @@ class MTRF64Controller(NooLiteFController):
                     delay = incoming_data.data[0] + (incoming_data.data[1] << 15)
                 listener.on_temporary_on(delay)
             elif incoming_data.command == Command.BRIGHT_UP:
-                listener.on_brightness_tune(BrightnessDirection.UP)
+                listener.on_brightness_tune(Direction.UP)
             elif incoming_data.command == Command.BRIGHT_DOWN:
-                listener.on_brightness_tune(BrightnessDirection.DOWN)
+                listener.on_brightness_tune(Direction.DOWN)
             elif incoming_data.command == Command.BRIGHT_BACK:
                 listener.on_brightness_tune_back()
             elif incoming_data.command == Command.BRIGHT_STEP_UP:
@@ -527,13 +455,13 @@ class MTRF64Controller(NooLiteFController):
                     step = incoming_data.data[0]
                 else:
                     step = None
-                listener.on_brightness_tune_step(BrightnessDirection.UP, step)
+                listener.on_brightness_tune_step(Direction.UP, step)
             elif incoming_data.command == Command.BRIGHT_STEP_DOWN:
                 if incoming_data.format == 1:
                     step = incoming_data.data[0]
                 else:
                     step = None
-                listener.on_brightness_tune_step(BrightnessDirection.DOWN, step)
+                listener.on_brightness_tune_step(Direction.DOWN, step)
             elif incoming_data.command == Command.STOP_BRIGHT:
                 listener.on_brightness_tune_stop()
             elif incoming_data.command == Command.SET_BRIGHTNESS:
@@ -564,9 +492,9 @@ class MTRF64Controller(NooLiteFController):
             elif incoming_data.command == Command.BRIGHT_REG:
                 if incoming_data.format == 1:
                     if incoming_data.data[0] & 0x80 == 0x80:
-                        direction = BrightnessDirection.UP
+                        direction = Direction.UP
                     else:
-                        direction = BrightnessDirection.DOWN
+                        direction = Direction.DOWN
                     speed = (incoming_data.data[0] & 0x7F) / 127
                     listener.on_brightness_tune_custom(direction, speed)
             elif incoming_data.command == Command.SENS_TEMP_HUMI:

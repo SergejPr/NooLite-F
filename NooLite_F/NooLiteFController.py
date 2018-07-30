@@ -25,7 +25,7 @@ class ServiceModeState(Enum):
     BIND_ON = 1
 
 
-class BrightnessDirection(Enum):
+class Direction(Enum):
     UP = 0
     DOWN = 1
 
@@ -130,7 +130,7 @@ class RemoteControllerListener(ABC):
     def on_temporary_on(self, duration: int):
         pass
 
-    def on_brightness_tune(self, direction: BrightnessDirection):
+    def on_brightness_tune(self, direction: Direction):
         pass
 
     def on_brightness_tune_back(self):
@@ -139,10 +139,10 @@ class RemoteControllerListener(ABC):
     def on_brightness_tune_stop(self):
         pass
 
-    def on_brightness_tune_custom(self, direction: BrightnessDirection, speed: float):
+    def on_brightness_tune_custom(self, direction: Direction, speed: float):
         pass
 
-    def on_brightness_tune_step(self, direction: BrightnessDirection, step: int = None):
+    def on_brightness_tune_step(self, direction: Direction, step: int = None):
         pass
 
     def on_set_brightness(self, brightness: float):
@@ -241,7 +241,7 @@ class NooLiteFController(ABC):
         pass
 
     @abstractmethod
-    def brightness_tune(self, direction: BrightnessDirection, module_id: int = None, channel: int = None,
+    def brightness_tune(self, direction: Direction, module_id: int = None, channel: int = None,
                         broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[
         ResponseBaseInfo]:
         """ Start to increase/decrease brightness
@@ -256,37 +256,9 @@ class NooLiteFController(ABC):
         pass
 
     @abstractmethod
-    def speed_tune(self, direction: BrightnessDirection, module_id: int = None, channel: int = None,
-                   broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[
-        ResponseBaseInfo]:
-        """ Start to increase/decrease speed
-
-        :param module_id: the module id. The command will be send to module with specified id (used only for NOOLITE-F modules).
-        :param channel: the number of the channel. The command will be send to all modules that are binded with selected channel. If module_id is also specified then command will be send only to appropriate device in channel.
-        :param broadcast: broadcast mode. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False). If module_id is specified or mode is NOOLITE then broadcast parameter will be ignored.
-        :param direction: direction of the speed changing
-        :param module_mode: module work mode, used to determine adapter mode for send command (default - NOOLITE_F).
-        :return: for nooLite-F command returns array which contains command result and module info for each module that are binded with selected channel. For nooLite modules returns nothing.
-        """
-        pass
-
-    @abstractmethod
     def brightness_tune_back(self, module_id: int = None, channel: int = None, broadcast: bool = False,
                              module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
         """ Invert direction of the brightness change
-
-        :param module_id: the module id. The command will be send to module with specified id (used only for NOOLITE-F modules).
-        :param channel: the number of the channel. The command will be send to all modules that are binded with selected channel. If module_id is also specified then command will be send only to appropriate device in channel.
-        :param broadcast: broadcast mode. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False). If module_id is specified or mode is NOOLITE then broadcast parameter will be ignored.
-        :param module_mode: module work mode, used to determine adapter mode for send command (default - NOOLITE_F).
-        :return: for nooLite-F command returns array which contains command result and module info for each module that are binded with selected channel. For nooLite modules returns nothing.
-        """
-        pass
-
-    @abstractmethod
-    def speed_tune_back(self, module_id: int = None, channel: int = None, broadcast: bool = False,
-                        module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
-        """ Invert direction of the speed change
 
         :param module_id: the module id. The command will be send to module with specified id (used only for NOOLITE-F modules).
         :param channel: the number of the channel. The command will be send to all modules that are binded with selected channel. If module_id is also specified then command will be send only to appropriate device in channel.
@@ -310,20 +282,7 @@ class NooLiteFController(ABC):
         pass
 
     @abstractmethod
-    def speed_tune_stop(self, module_id: int = None, channel: int = None, broadcast: bool = False,
-                        module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
-        """ Stop speed changing
-
-        :param module_id: the module id. The command will be send to module with specified id (used only for NOOLITE-F modules).
-        :param channel: the number of the channel. The command will be send to all modules that are binded with selected channel. If module_id is also specified then command will be send only to appropriate device in channel.
-        :param broadcast: broadcast mode. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False). If module_id is specified or mode is NOOLITE then broadcast parameter will be ignored.
-        :param module_mode: module work mode, used to determine adapter mode for send command (default - NOOLITE_F).
-        :return: for nooLite-F command returns array which contains command result and module info for each module that are binded with selected channel. For nooLite modules returns nothing.
-        """
-        pass
-
-    @abstractmethod
-    def brightness_tune_custom(self, direction: BrightnessDirection, speed: float, module_id: int = None,
+    def brightness_tune_custom(self, direction: Direction, speed: float, module_id: int = None,
                                channel: int = None, broadcast: bool = False,
                                module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
         """ Start to increase/decrease brightness with a specified speed
@@ -339,23 +298,7 @@ class NooLiteFController(ABC):
         pass
 
     @abstractmethod
-    def speed_tune_custom(self, direction: BrightnessDirection, speed: float, module_id: int = None, channel: int = None,
-                          broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[
-        ResponseBaseInfo]:
-        """ Start to increase/decrease brightness with a specified speed
-
-        :param module_id: the module id. The command will be send to module with specified id (used only for NOOLITE-F modules).
-        :param channel: the number of the channel. The command will be send to all modules that are binded with selected channel. If module_id is also specified then command will be send only to appropriate device in channel.
-        :param broadcast: broadcast mode. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False). If module_id is specified or mode is NOOLITE then broadcast parameter will be ignored.
-        :param direction: direction of the speed changing
-        :param speed: speed of the speed changing. The range of value is 0 .. 1.0
-        :param module_mode: module work mode, used to determine adapter mode for send command (default - NOOLITE_F).
-        :return: for nooLite-F command returns array which contains command result and module info for each module that are binded with selected channel. For nooLite modules returns nothing.
-        """
-        pass
-
-    @abstractmethod
-    def brightness_tune_step(self, direction: BrightnessDirection, step: int = None, module_id: int = None,
+    def brightness_tune_step(self, direction: Direction, step: int = None, module_id: int = None,
                              channel: int = None, broadcast: bool = False,
                              module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
         """ Increase/decrease brightness once with a specified step
@@ -371,22 +314,6 @@ class NooLiteFController(ABC):
         pass
 
     @abstractmethod
-    def speed_tune_step(self, direction: BrightnessDirection, step: int = None, module_id: int = None,
-                             channel: int = None, broadcast: bool = False,
-                             module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
-        """ Increase/decrease brightness once with a specified step
-
-        :param module_id: the module id. The command will be send to module with specified id (used only for NOOLITE-F modules).
-        :param channel: the number of the channel. The command will be send to all modules that are binded with selected channel. If module_id is also specified then command will be send only to appropriate device in channel.
-        :param broadcast: broadcast mode. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False). If module_id is specified or mode is NOOLITE then broadcast parameter will be ignored.
-        :param direction: direction of the speed changing
-        :param step: step in microseconds. If specify then can have values in range (1..255) or 0 (it is means 256), by default step equals 64
-        :param module_mode: module work mode, used to determine adapter mode for send command (default - NOOLITE_F).
-        :return: for nooLite-F command returns array which contains command result and module info for each module that are binded with selected channel. For nooLite modules returns nothing.
-        """
-        pass
-
-    @abstractmethod
     def set_brightness(self, brightness: float, module_id: int = None, channel: int = None, broadcast: bool = False,
                        module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
         """ Set brightness
@@ -395,20 +322,6 @@ class NooLiteFController(ABC):
         :param channel: the number of the channel. The command will be send to all modules that are binded with selected channel. If module_id is also specified then command will be send only to appropriate device in channel.
         :param broadcast: broadcast mode. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False). If module_id is specified or mode is NOOLITE then broadcast parameter will be ignored.
         :param brightness: brightness level. The range of value is 0 .. 1.0
-        :param module_mode: module work mode, used to determine adapter mode for send command (default - NOOLITE_F).
-        :return: for nooLite-F command returns array which contains command result and module info for each module that are binded with selected channel. For nooLite modules returns nothing.
-        """
-        pass
-
-    @abstractmethod
-    def set_speed(self, brightness: float, module_id: int = None, channel: int = None, broadcast: bool = False,
-                       module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
-        """ Set brightness
-
-        :param module_id: the module id. The command will be send to module with specified id (used only for NOOLITE-F modules).
-        :param channel: the number of the channel. The command will be send to all modules that are binded with selected channel. If module_id is also specified then command will be send only to appropriate device in channel.
-        :param broadcast: broadcast mode. If True then command will be send simultaneously to all modules that are binded with selected channel (default - False). If module_id is specified or mode is NOOLITE then broadcast parameter will be ignored.
-        :param brightness: speed level. The range of value is 0 .. 1.0
         :param module_mode: module work mode, used to determine adapter mode for send command (default - NOOLITE_F).
         :return: for nooLite-F command returns array which contains command result and module info for each module that are binded with selected channel. For nooLite modules returns nothing.
         """
