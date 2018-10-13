@@ -108,6 +108,7 @@ _LOGGER_HANDLER = logging.StreamHandler()
 _LOGGER_HANDLER.setFormatter(logging.Formatter("%(asctime)s;%(levelname)s;%(message)s", "%Y-%m-%d %H:%M:%S"))
 _LOGGER.addHandler(_LOGGER_HANDLER)
 
+
 class MTRF64USBAdapter(object):
     _packet_size = 17
     _serial = None
