@@ -142,7 +142,7 @@ class MTRF64USBAdapter(object):
         responses = []
 
         packet = self._build(data)
-        _LOGGER.debug("Send:\n - request: {0},\n - packet: {1}".format(data, packet))
+        _LOGGER.warning("Send:\n - request: {0},\n - packet: {1}".format(data, packet))
 
         with self._command_response_queue.mutex:
             self._command_response_queue.queue.clear()
@@ -156,7 +156,7 @@ class MTRF64USBAdapter(object):
                     break
 
         except Empty as err:
-            _LOGGER.error("Error receiving response: {0}".format(err))
+            _LOGGER.error("Error receiving response: {0}.".format(err))
 
         # For NooLite.TX we should make a bit delay. Adapter send the response without waiting until command was delivered.
         # So if we send new command until previous command was sent to module, adapter will ignore new command. Note:
@@ -207,7 +207,7 @@ class MTRF64USBAdapter(object):
 
             try:
                 data = self._parse(packet)
-                _LOGGER.debug("Receive:\n - packet: {0},\n - data: {1}".format(packet, data))
+                _LOGGER.warning("Receive:\n - packet: {0},\n - data: {1}".format(packet, data))
 
                 if data.mode == Mode.TX or data.mode == Mode.TX_F:
                     self._command_response_queue.put(data)
