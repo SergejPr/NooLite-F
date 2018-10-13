@@ -143,11 +143,9 @@ class MTRF64USBAdapter(object):
         responses = []
 
         packet = self._build(data)
-        _LOGGER.warning("Send:\n - request: {0},\n - packet: {1}".format(data, packet))
-
         with self._send_lock:
+            _LOGGER.warning("Send:\n - request: {0},\n - packet: {1}".format(data, packet))
             self._command_response_queue.queue.clear()
-
             self._serial.write(packet)
 
             try:
