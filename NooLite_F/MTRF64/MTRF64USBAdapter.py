@@ -104,7 +104,9 @@ class IncomingData(object):
 
 _LOGGER = logging.getLogger("MTRF64USBAdapter")
 _LOGGER.setLevel(logging.WARNING)
-_LOGGER.addHandler(logging.StreamHandler())
+_LOGGER_HANDLER = logging.StreamHandler()
+_LOGGER_HANDLER.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s", "%Y-%m-%d %H:%M:%S"))
+_LOGGER.addHandler(_LOGGER_HANDLER)
 
 
 class MTRF64USBAdapter(object):
@@ -113,6 +115,7 @@ class MTRF64USBAdapter(object):
     _read_thread = None
     _command_response_queue = Queue()
     _incoming_queue = Queue()
+    _send_lock = Lock()
     _listener_thread = None
     _listener = None
     _is_released = False
@@ -142,26 +145,25 @@ class MTRF64USBAdapter(object):
         responses = []
 
         packet = self._build(data)
-        _LOGGER.debug("Send:\n - request: {0},\n - packet: {1}".format(data, packet))
-
-        with self._command_response_queue.mutex:
+        with self._send_lock:
+            _LOGGER.debug("Send:\n - request: {0},\n - packet: {1}".format(data, packet))
             self._command_response_queue.queue.clear()
-        self._serial.write(packet)
+            self._serial.write(packet)
 
-        try:
-            while True:
-                response = self._command_response_queue.get(timeout=2)
-                responses.append(response)
-                if response.count == 0:
-                    break
+            try:
+                while True:
+                    response = self._command_response_queue.get(timeout=2)
+                    responses.append(response)
+                    if response.count == 0:
+                        break
 
-        except Empty as err:
-            _LOGGER.error("Error receiving response: {0}".format(err))
+            except Empty as err:
+                _LOGGER.error("Error receiving response: {0}.".format(err))
 
-        # For NooLite.TX we should make a bit delay. Adapter send the response without waiting until command was delivered.
-        # So if we send new command until previous command was sent to module, adapter will ignore new command. Note:
-        if data.mode == Mode.TX or data.mode == Mode.RX:
-            sleep(0.2)
+            # For NooLite.TX we should make a bit delay. Adapter send the response without waiting until command was delivered.
+            # So if we send new command until previous command was sent to module, adapter will ignore new command. Note:
+            if data.mode == Mode.TX or data.mode == Mode.RX:
+                sleep(0.2)
 
         return responses
 
