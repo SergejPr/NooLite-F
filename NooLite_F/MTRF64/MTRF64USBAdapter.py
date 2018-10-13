@@ -103,7 +103,7 @@ class IncomingData(object):
 
 
 _LOGGER = logging.getLogger("MTRF64USBAdapter")
-_LOGGER.setLevel(logging.WARNING)
+_LOGGER.setLevel(logging.DEBUG)
 _LOGGER.addHandler(logging.StreamHandler())
 
 
