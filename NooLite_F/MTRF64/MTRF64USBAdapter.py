@@ -103,7 +103,7 @@ class IncomingData(object):
 
 
 _LOGGER = logging.getLogger("MTRF64USBAdapter")
-_LOGGER.setLevel(logging.DEBUG)
+_LOGGER.setLevel(logging.WARNING)
 _LOGGER_HANDLER = logging.StreamHandler()
 _LOGGER_HANDLER.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s", "%Y-%m-%d %H:%M:%S"))
 _LOGGER.addHandler(_LOGGER_HANDLER)
@@ -146,7 +146,7 @@ class MTRF64USBAdapter(object):
 
         packet = self._build(data)
         with self._send_lock:
-            _LOGGER.warning("Send:\n - request: {0},\n - packet: {1}".format(data, packet))
+            _LOGGER.debug("Send:\n - request: {0},\n - packet: {1}".format(data, packet))
             self._command_response_queue.queue.clear()
             self._serial.write(packet)
 
@@ -209,7 +209,7 @@ class MTRF64USBAdapter(object):
 
             try:
                 data = self._parse(packet)
-                _LOGGER.warning("Receive:\n - packet: {0},\n - data: {1}".format(packet, data))
+                _LOGGER.debug("Receive:\n - packet: {0},\n - data: {1}".format(packet, data))
 
                 if data.mode == Mode.TX or data.mode == Mode.TX_F:
                     self._command_response_queue.put(data)
