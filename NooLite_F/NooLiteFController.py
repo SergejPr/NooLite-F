@@ -43,12 +43,12 @@ class InputMode(Enum):
 
 
 class ModuleConfig(object):
-    dimmer_mode: bool = None
-    input_mode: InputMode = None
-    save_state_mode: bool = None
-    init_state: bool = None
-    noolite_support: bool = None
-    noolite_retranslation: bool = None
+    dimmer_mode = None
+    input_mode = None
+    save_state_mode = None
+    init_state = None
+    noolite_support = None
+    noolite_retranslation = None
 
     def __repr__(self):
         return "<ModuleConfiguration (0x{0:x}), save state: {1}, dimer mode: {2}, noolite support: {3}, extra input mode: {4}, init state: {5}, retranslate noolite: {6}>" \
@@ -57,8 +57,8 @@ class ModuleConfig(object):
 
 
 class DimmerCorrectionConfig(object):
-    min_level: float = 0.0
-    max_level: float = 1.0
+    min_level = 0.0
+    max_level = 1.0
 
     def __repr__(self):
         return "<BrightnessConfiguration (0x{0:x}), min level: {1}, max_level: {2}>" \
@@ -66,9 +66,9 @@ class DimmerCorrectionConfig(object):
 
 
 class ModuleInfo(object):
-    id: int = None
-    firmware: int = None
-    type: int = None
+    id = None
+    firmware = None
+    type = None
 
     def __repr__(self):
         return "<ModuleInfo (0x{0:x}), id: 0x{1:x}, type: {2}, firmware: {3}>" \
@@ -76,9 +76,9 @@ class ModuleInfo(object):
 
 
 class ModuleBaseStateInfo(object):
-    state: ModuleState = None
-    service_mode: ServiceModeState = None
-    brightness: float = None
+    state = None
+    service_mode = None
+    brightness = None
 
     def __repr__(self):
         return "<ModuleBaseStateInfo (0x{0:x}), state: {1}, brightness: {2}, service mode: {3}>" \
@@ -86,8 +86,8 @@ class ModuleBaseStateInfo(object):
 
 
 class ModuleExtraStateInfo(object):
-    extra_input_state: bool = None
-    noolite_mode_state: NooliteModeState = None
+    extra_input_state = None
+    noolite_mode_state = None
 
     def __repr__(self):
         return "<ModuleExtraStateInfo (0x{0:x}), button state: {1}, noolite mode state: {2}>" \
@@ -95,8 +95,8 @@ class ModuleExtraStateInfo(object):
 
 
 class ModuleChannelsStateInfo(object):
-    noolite_cells: int = None
-    noolite_f_cells: int = None
+    noolite_cells = None
+    noolite_f_cells = None
 
     def __repr__(self):
         return "<ModuleCellsStateInfo (0x{0:x}), noolite channels: {1}, noolite-f channels: {2}>" \

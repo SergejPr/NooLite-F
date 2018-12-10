@@ -4,7 +4,7 @@ from NooLite_F import NooliteModeState, InputMode
 from NooLite_F import ResponseBaseInfo, ResponseExtraInfo, ResponseChannelsInfo, ResponseModuleConfig, ResponseDimmerCorrectionConfig
 from NooLite_F.MTRF64 import MTRF64USBAdapter, IncomingData, Command, Mode, Action, OutgoingData, ResponseCode
 from abc import ABC, abstractmethod
-from typing import TypeVar, Generic, List, Tuple, Type
+from typing import TypeVar, Generic, List, Tuple
 
 
 T = TypeVar('T')
@@ -132,7 +132,7 @@ class BrightnessConfigurationParser(Parser[IncomingData, ModuleConfig]):
 class MTRF64Controller(NooLiteFController):
 
     _adapter = None
-    _listener_map: {int: [RemoteControllerListener]} = {}
+    _listener_map = {}
 
     _mode_map = {
         ModuleMode.NOOLITE: Mode.TX,
@@ -227,13 +227,13 @@ class MTRF64Controller(NooLiteFController):
         return self._send_module_base_command(module_id, channel, Command.ON, broadcast, self._command_mode(module_mode))
 
     def temporary_on(self, duration: int, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
-        data: bytearray = bytearray(2)
+        data = bytearray(2)
         data[0] = duration & 0x00FF
         data[1] = duration & 0xFF00
         return self._send_module_base_command(module_id, channel, Command.TEMPORARY_ON, broadcast, self._command_mode(module_mode), data, 6)
 
     def set_temporary_on_mode(self, enabled: bool, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
-        data: bytearray = bytearray(1)
+        data = bytearray(1)
         if not enabled:
             data[0] = 1
         return self._send_module_base_command(module_id, channel, Command.MODES, broadcast, self._command_mode(module_mode), data, 1)
@@ -265,18 +265,18 @@ class MTRF64Controller(NooLiteFController):
         if direction == Direction.DOWN:
             value = -value - 1
 
-        data: bytearray = bytearray(1)
+        data = bytearray(1)
         data[0] = value & 0xFF
 
         return self._send_module_base_command(module_id, channel, Command.BRIGHT_REG, broadcast, self._command_mode(module_mode), data, 1)
 
     def brightness_tune_step(self, direction: Direction, step: int = None, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
-        data: bytearray = None
-        fmt: int = None
+        data = None
+        fmt = None
 
         if step is not None:
             fmt = 1
-            data: bytearray = bytearray(1)
+            data = bytearray(1)
             data[0] = step
 
         if direction == Direction.UP:
@@ -294,7 +294,7 @@ class MTRF64Controller(NooLiteFController):
         else:
             value = 35 + int((120 * brightness) + 0.5)
 
-        data: bytearray = bytearray(1)
+        data = bytearray(1)
         data[0] = value
 
         return self._send_module_base_command(module_id, channel, Command.SET_BRIGHTNESS, broadcast, self._command_mode(module_mode), data, 1)
@@ -312,7 +312,7 @@ class MTRF64Controller(NooLiteFController):
         return self._send_module_base_command(module_id, channel, Command.SPEED_MODE, broadcast, self._command_mode(module_mode))
 
     def set_rgb_brightness(self, red: float, green: float, blue: float, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
-        data: bytearray = bytearray(3)
+        data = bytearray(3)
         data[0] = self._convert_brightness(red)
         data[1] = self._convert_brightness(green)
         data[2] = self._convert_brightness(blue)
@@ -403,18 +403,18 @@ class MTRF64Controller(NooLiteFController):
         return self._send_module_base_command(module_id, channel, Command.UNBIND, broadcast, self._command_mode(module_mode))
 
     def set_service_mode(self, state: bool, module_id: int = None, channel: int = None, broadcast: bool = False, module_mode: ModuleMode = ModuleMode.NOOLITE_F) -> List[ResponseBaseInfo]:
-        data: bytearray = bytearray(1)
+        data = bytearray(1)
         if state:
             data[0] = 1
         return self._send_module_base_command(module_id, channel, Command.SERVICE, broadcast, self._command_mode(module_mode), data)
 
     def add_listener(self, channel: int, listener: RemoteControllerListener):
-        listeners: [RemoteControllerListener] = self._listener_map.get(channel, [])
+        listeners = self._listener_map.get(channel, [])
         listeners.append(listener)
         self._listener_map[channel] = listeners
 
     def remove_listener(self, channel: int, listener: RemoteControllerListener):
-        listeners: [RemoteControllerListener] = self._listener_map.get(channel, [])
+        listeners = self._listener_map.get(channel, [])
         listeners.remove(listener)
         if len(listeners) == 0:
             listeners = None
@@ -422,7 +422,7 @@ class MTRF64Controller(NooLiteFController):
 
     # Listeners
     def _on_receive(self, incoming_data: IncomingData):
-        listeners: [RemoteControllerListener] = self._listener_map.get(incoming_data.channel, None)
+        listeners = self._listener_map.get(incoming_data.channel, None)
 
         if listeners is None:
             return
@@ -526,4 +526,3 @@ class MTRF64Controller(NooLiteFController):
                     listener.on_temp_humi(temp, humi, battery, analog)
             elif incoming_data.command == Command.BATTERY_LOW:
                 listener.on_battery_low()
-

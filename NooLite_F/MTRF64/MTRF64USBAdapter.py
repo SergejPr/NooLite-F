@@ -74,13 +74,13 @@ class IncomingDataException(Exception):
 
 
 class OutgoingData(object):
-    mode: Mode = Mode.TX
-    action: Action = Action.SEND_COMMAND
-    channel: int = 0
-    command: Command = Command.OFF
-    format: int = 0
-    data: bytearray = bytearray(4)
-    id: int = 0
+    mode = Mode.TX
+    action = Action.SEND_COMMAND
+    channel = 0
+    command = Command.OFF
+    format = 0
+    data = bytearray(4)
+    id = 0
 
     def __repr__(self):
         return "<Request (0x{0:x}), mode: {1}, action: {2}, channel: {3:d}, command: {4:d}, format: {5:d}, data: {6}, id: 0x{7:x}>"\
@@ -88,14 +88,14 @@ class OutgoingData(object):
 
 
 class IncomingData(object):
-    mode: Mode = None
-    status: ResponseCode = None
-    channel: int = None
-    command: Command = None
-    count: int = None
-    format: int = None
-    data: bytearray = None
-    id: int = None
+    mode = None
+    status = None
+    channel = None
+    command = None
+    count = None
+    format = None
+    data = None
+    id = None
 
     def __repr__(self):
         return "<Response (0x{0:x}), mode: {1}, status: {2}, packet_count: {3} channel: {4:d}, command: {5:d}, format: {6:d}, data: {7}, id: 0x{8:x}>"\
