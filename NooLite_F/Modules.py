@@ -90,7 +90,7 @@ class Dimmer(ExtendedSwitch):
 class Fan(ExtendedSwitch):
 
     def speed_tune(self, direction: Direction) -> [ResponseBaseInfo]:
-        return self._controller.speed_tune(direction, self._module_id, self._channel, self._broadcast_mode, self._module_mode)
+        return self._controller.brightness_tune(direction, self._module_id, self._channel, self._broadcast_mode, self._module_mode)
 
     def speed_tune_back(self) -> [ResponseBaseInfo]:
         return self._controller.brightness_tune_back(self._module_id, self._channel, self._broadcast_mode, self._module_mode)
