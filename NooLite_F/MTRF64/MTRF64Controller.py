@@ -2,7 +2,7 @@ from NooLite_F import NooLiteFController, Direction, ModuleMode, RemoteControlle
 from NooLite_F import ModuleInfo, ModuleBaseStateInfo, ModuleExtraStateInfo, ModuleChannelsStateInfo, ModuleState, ServiceModeState, DimmerCorrectionConfig, ModuleConfig
 from NooLite_F import NooliteModeState, InputMode
 from NooLite_F import ResponseBaseInfo, ResponseExtraInfo, ResponseChannelsInfo, ResponseModuleConfig, ResponseDimmerCorrectionConfig
-from NooLite_F.MTRF64 import MTRF64USBAdapter, IncomingData, Command, Mode, Action, OutgoingData, ResponseCode
+from NooLite_F.MTRF64 import IncomingData, Command, Mode, Action, OutgoingData, ResponseCode, MTRF64Adapter
 from abc import ABC, abstractmethod
 from typing import TypeVar, Generic, List, Tuple
 
@@ -140,7 +140,7 @@ class MTRF64Controller(NooLiteFController):
     }
 
     def __init__(self, port: str):
-        self._adapter = MTRF64USBAdapter(port, self._on_receive)
+        self._adapter = MTRF64Adapter(port, self._on_receive)
 
     def release(self):
         self._adapter.release()
