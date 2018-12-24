@@ -40,6 +40,22 @@ class MotionSensor(Sensor):
             self._motion_listener(duration)
 
 
+class BinarySensor(Sensor):
+    def __init__(self, controller: NooLiteFController, channel: int, on_on=None, on_off=None, on_battery_low=None):
+
+        super().__init__(controller, channel, on_battery_low)
+        self._on_listener = on_on
+        self._off_listener = on_off
+
+    def on_on(self):
+        if self._on_listener is not None:
+            self._on_listener()
+
+    def on_off(self):
+        if self._off_listener is not None:
+            self._off_listener()
+
+
 class RemoteController(Sensor):
     def __init__(self, controller: NooLiteFController, channel: int,
                  on_on=None, on_off=None, on_switch=None,
