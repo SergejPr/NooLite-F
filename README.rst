@@ -8,7 +8,7 @@ You can find more details about MTRF-64-USB api on official NooLite site:
 * https://www.noo.com.by/assets/files/PDF/nooLite%20API_v1.0.pdf
 * https://www.noo.com.by/assets/files/PDF/MTRF-64-USB.pdf
 
-**Supportorted Python versions:** Python 3.5 and later
+**Supported Python versions:** Python 3.5 and later
 
 Send commands to modules
 ========================
