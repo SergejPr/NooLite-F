@@ -3,7 +3,7 @@ from NooLite_F import NooLiteFController, RemoteControllerListener, BatteryState
 
 class Sensor(RemoteControllerListener):
 
-    def __init__(self, controller: NooLiteFController, channel: int, on_battery_low):
+    def __init__(self, controller: NooLiteFController, channel: int, on_battery_low=None):
         self._controller = controller
         self._channel = channel
         self._battery_low_listener = on_battery_low
@@ -20,13 +20,13 @@ class Sensor(RemoteControllerListener):
 
 class TempHumiSensor(Sensor):
 
-    def __init__(self, controller: NooLiteFController, channel: int, on_temp_humi, on_battery_low=None):
-        super().__init__(controller, channel, on_battery_low)
-        self._temp_humi_listener = on_temp_humi
+    def __init__(self, controller: NooLiteFController, channel: int, on_data):
+        super().__init__(controller, channel)
+        self._on_data_listener = on_data
 
     def on_temp_humi(self, temp: float, humi: int, battery: BatteryState, analog: float):
-        if self._temp_humi_listener is not None:
-            self._temp_humi_listener(temp, humi, battery, analog)
+        if self._on_data_listener is not None:
+            self._on_data_listener(temp, humi, analog, battery)
 
 
 class MotionSensor(Sensor):
