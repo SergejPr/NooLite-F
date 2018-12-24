@@ -57,10 +57,9 @@ class BinarySensor(Sensor):
 
 
 class RemoteController(Sensor):
-    def __init__(self, controller: NooLiteFController, channel: int,
-                 on_on=None, on_off=None, on_switch=None,
-                 on_tune_start=None, on_tune_back=None, on_tune_stop=None,
-                 on_load_preset=None, on_save_preset=None, on_battery_low=None):
+    def __init__(self, controller: NooLiteFController, channel: int, on_on=None, on_off=None, on_switch=None,
+                 on_tune_start=None, on_tune_back=None, on_tune_stop=None, on_load_preset=None, on_save_preset=None,
+                 on_battery_low=None):
 
         super().__init__(controller, channel, on_battery_low)
         self._on_listener = on_on
@@ -106,9 +105,9 @@ class RemoteController(Sensor):
 
 
 class RGBRemoteController(Sensor):
-    def __init__(self, controller: NooLiteFController, channel: int,
-                 on_switch=None, on_tune_back=None, on_tune_stop=None,
-                 on_roll_color=None, on_switch_color=None, on_switch_mode=None, on_switch_speed=None, on_battery_low=None):
+    def __init__(self, controller: NooLiteFController, channel: int, on_switch=None, on_tune_back=None,
+                 on_tune_stop=None, on_roll_color=None, on_switch_color=None, on_switch_mode=None, on_switch_speed=None,
+                 on_battery_low=None):
 
         super().__init__(controller, channel, on_battery_low)
         self._switch_listener = on_switch
