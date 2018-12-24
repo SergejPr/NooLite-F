@@ -1,4 +1,4 @@
-from NooLite_F import NooLiteFController, Direction, ModuleMode, RemoteControllerListener, BatteryState
+from NooLite_F import NooLiteFController, Direction, ModuleMode, NooLiteFListener, BatteryState
 from NooLite_F import ModuleInfo, ModuleBaseStateInfo, ModuleExtraStateInfo, ModuleChannelsStateInfo, ModuleState, ServiceModeState, DimmerCorrectionConfig, ModuleConfig
 from NooLite_F import NooliteModeState, InputMode
 from NooLite_F import ResponseBaseInfo, ResponseExtraInfo, ResponseChannelsInfo, ResponseModuleConfig, ResponseDimmerCorrectionConfig
@@ -408,12 +408,12 @@ class MTRF64Controller(NooLiteFController):
             data[0] = 1
         return self._send_module_base_command(module_id, channel, Command.SERVICE, broadcast, self._command_mode(module_mode), data)
 
-    def add_listener(self, channel: int, listener: RemoteControllerListener):
+    def add_listener(self, channel: int, listener: NooLiteFListener):
         listeners = self._listener_map.get(channel, [])
         listeners.append(listener)
         self._listener_map[channel] = listeners
 
-    def remove_listener(self, channel: int, listener: RemoteControllerListener):
+    def remove_listener(self, channel: int, listener: NooLiteFListener):
         listeners = self._listener_map.get(channel, [])
         listeners.remove(listener)
         if len(listeners) == 0:
