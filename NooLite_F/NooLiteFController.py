@@ -110,7 +110,7 @@ ResponseModuleConfig = Tuple[bool, ModuleConfig]
 ResponseDimmerCorrectionConfig = Tuple[bool, DimmerCorrectionConfig]
 
 
-class RemoteControllerListener(ABC):
+class NooLiteFListener(ABC):
 
     def on_on(self):
         pass
@@ -558,7 +558,7 @@ class NooLiteFController(ABC):
         pass
 
     @abstractmethod
-    def add_listener(self, channel: int, listener: RemoteControllerListener):
+    def add_listener(self, channel: int, listener: NooLiteFListener):
         """ Add the remote controls listener to channel.
 
         :param channel: channel to which the listener will be assigned
@@ -567,7 +567,7 @@ class NooLiteFController(ABC):
         pass
 
     @abstractmethod
-    def remove_listener(self, channel: int, listener: RemoteControllerListener):
+    def remove_listener(self, channel: int, listener: NooLiteFListener):
         """ Remove the remote controls listener from channel.
 
         :param channel: channel to which the listener will be assigned
