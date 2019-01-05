@@ -3,4 +3,4 @@ from NooLite_F.NooLiteFController import ModuleInfo, ModuleBaseStateInfo, Module
     DimmerCorrectionConfig, ModuleConfig, NooliteModeState
 from NooLite_F.NooLiteFController import ResponseBaseInfo, ResponseExtraInfo, ResponseChannelsInfo, ResponseModuleConfig, ResponseDimmerCorrectionConfig
 from NooLite_F.Modules import Switch, ExtendedSwitch, Dimmer, RGBLed
-from NooLite_F.Sensors import AbstractListener, TempHumiSensor, MotionSensor, RemoteController, RGBRemoteController
+from NooLite_F.Sensors import GenericListener, TempHumiSensor, MotionSensor, RemoteController, RGBRemoteController
