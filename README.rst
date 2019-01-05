@@ -280,3 +280,11 @@ Tested with MTRF-64-USB adapter and modules:
 * PK315 (Noolite, remote controller)
 * PU112-2 (NooLite, RGB remote controller)
 
+
+Breaking changes:
+====
+
+v0.1.0
+----
+
+* change parameters order in TempHumi sensor callback from *(temp, humi, battery, analog)* to *(temp, humi, analog, battery)*
