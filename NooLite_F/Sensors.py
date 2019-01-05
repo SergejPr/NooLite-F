@@ -1,7 +1,7 @@
 from NooLite_F import NooLiteFController, NooLiteFListener, BatteryState, Direction
 
 
-class AbstractListener(NooLiteFListener):
+class GenericListener(NooLiteFListener):
 
     def __init__(self, controller: NooLiteFController, channel: int, on_battery_low=None):
         self._controller = controller
@@ -18,7 +18,7 @@ class AbstractListener(NooLiteFListener):
             self._battery_low_listener()
 
 
-class TempHumiSensor(AbstractListener):
+class TempHumiSensor(GenericListener):
 
     def __init__(self, controller: NooLiteFController, channel: int, on_data):
         super().__init__(controller, channel)
@@ -29,7 +29,7 @@ class TempHumiSensor(AbstractListener):
             self._on_data_listener(temp, humi, analog, battery)
 
 
-class MotionSensor(AbstractListener):
+class MotionSensor(GenericListener):
 
     def __init__(self, controller: NooLiteFController, channel: int, on_motion, on_battery_low=None):
         super().__init__(controller, channel, on_battery_low)
@@ -40,7 +40,7 @@ class MotionSensor(AbstractListener):
             self._motion_listener(duration)
 
 
-class BinarySensor(AbstractListener):
+class BinarySensor(GenericListener):
     def __init__(self, controller: NooLiteFController, channel: int, on_on=None, on_off=None, on_battery_low=None):
 
         super().__init__(controller, channel, on_battery_low)
@@ -56,7 +56,7 @@ class BinarySensor(AbstractListener):
             self._off_listener()
 
 
-class RemoteController(AbstractListener):
+class RemoteController(GenericListener):
     def __init__(self, controller: NooLiteFController, channel: int, on_on=None, on_off=None, on_switch=None,
                  on_tune_start=None, on_tune_back=None, on_tune_stop=None, on_load_preset=None, on_save_preset=None,
                  on_battery_low=None):
@@ -104,7 +104,7 @@ class RemoteController(AbstractListener):
             self._back_listener()
 
 
-class RGBRemoteController(AbstractListener):
+class RGBRemoteController(GenericListener):
     def __init__(self, controller: NooLiteFController, channel: int, on_switch=None, on_tune_back=None,
                  on_tune_stop=None, on_roll_color=None, on_switch_color=None, on_switch_mode=None, on_switch_speed=None,
                  on_battery_low=None):
