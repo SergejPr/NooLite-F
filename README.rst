@@ -1,8 +1,8 @@
 NooLite-F
 =========
 
-Python module to work with NooLite-F (MTRF-64-USB)
-You can find more details about MTRF-64-USB api on official NooLite site:
+Python module to work with NooLite-F (MTRF-64-USB, MTRF-64)
+You can find more details about MTRF-64/MTRF-64-USB api on official NooLite site:
 
 * https://www.noo.com.by/
 * https://www.noo.com.by/assets/files/PDF/nooLite%20API_v1.0.pdf
@@ -259,6 +259,7 @@ Available wrappers:
 
 * **TempHumiSensor** - supports receiving data from temperature and humidity sensors.
 * **MotionSensor** - supports receiving data from motion sensor.
+* **BinarySensor** - supports receiving data from wet and opening sensor.
 * **RemoteController** - supports receiving commands from standard NooLite remote controllers.
 * **RGBRemoteController** - supports receiving commands from RGB Remote controller.
 
