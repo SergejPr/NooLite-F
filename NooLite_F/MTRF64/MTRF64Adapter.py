@@ -83,8 +83,7 @@ class OutgoingData(object):
     id = 0
 
     def __repr__(self):
-        return "<Request (0x{0:x}), mode: {1}, action: {2}, channel: {3:d}, command: {4:d}, format: {5:d}, data: {6}, id: 0x{7:x}>"\
-            .format(id(self), self.mode, self.action, self.channel, self.command, self.format, self.data, self.id)
+        return "<Request (0x{0:x}), mode: {1}, action: {2}, channel: {3:d}, command: {4:d}, format: {5:d}, data: {6}, id: 0x{7:x}>".format(id(self), self.mode, self.action, self.channel, self.command, self.format, self.data, self.id)
 
 
 class IncomingData(object):
@@ -98,8 +97,7 @@ class IncomingData(object):
     id = None
 
     def __repr__(self):
-        return "<Response (0x{0:x}), mode: {1}, status: {2}, packet_count: {3} channel: {4:d}, command: {5:d}, format: {6:d}, data: {7}, id: 0x{8:x}>"\
-            .format(id(self), self.mode, self.status, self.count, self.channel, self.command, self.format, self.data, self.id)
+        return "<Response (0x{0:x}), mode: {1}, status: {2}, packet_count: {3} channel: {4:d}, command: {5:d}, format: {6:d}, data: {7}, id: 0x{8:x}>".format(id(self), self.mode, self.status, self.count, self.channel, self.command, self.format, self.data, self.id)
 
 
 _LOGGER = logging.getLogger("MTRF64USBAdapter")
