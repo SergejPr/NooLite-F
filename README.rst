@@ -282,9 +282,9 @@ Tested with MTRF-64-USB adapter and modules:
 
 
 Breaking changes:
-====
+=================
 
 v0.1.0
-----
+------
 
 * change parameters order in TempHumi sensor callback from *(temp, humi, battery, analog)* to *(temp, humi, analog, battery)*
