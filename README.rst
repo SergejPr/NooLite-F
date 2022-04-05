@@ -4,9 +4,11 @@ NooLite-F
 Python module to work with NooLite-F (MTRF-64-USB, MTRF-64)
 You can find more details about MTRF-64/MTRF-64-USB api on official NooLite site:
 
-* https://www.noo.com.by/
-* https://www.noo.com.by/assets/files/PDF/nooLite%20API_v1.0.pdf
-* https://www.noo.com.by/assets/files/PDF/MTRF-64-USB.pdf
+* https://noo.by/
+* https://noo.by/images/instructions/Adaptery%20i%20moduli/rukovodstvo-po-ekspluatatsii-mtrf-64-usb-a.pdf
+* https://noo.by/images/instructions/Adaptery%20i%20moduli/mtrf-64-usb.pdf
+* https://noo.by/images/instructions/Adaptery%20i%20moduli/rukovodstvo-po-ekspluatatsii-mtrf-64-a.pdf
+* https://noo.by/images/instructions/Adaptery%20i%20moduli/mtrf-64.pdf
 
 **Supported Python versions:** Python 3.5 and later
 
