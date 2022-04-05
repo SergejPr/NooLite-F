@@ -3,6 +3,8 @@ from NooLite_F import ModuleInfo, ModuleBaseStateInfo, ModuleExtraStateInfo, Mod
 from NooLite_F import NooliteModeState, InputMode
 from NooLite_F import ResponseBaseInfo, ResponseExtraInfo, ResponseChannelsInfo, ResponseModuleConfig, ResponseDimmerCorrectionConfig
 from NooLite_F.MTRF64 import IncomingData, Command, Mode, Action, OutgoingData, ResponseCode, MTRF64Adapter
+from NooLite_F.MTRF64.MTRF64Adapter import DEFAULT_BAUDRATE
+
 from abc import ABC, abstractmethod
 from typing import TypeVar, Generic, List, Tuple
 
@@ -139,8 +141,8 @@ class MTRF64Controller(NooLiteFController):
         ModuleMode.NOOLITE_F: Mode.TX_F,
     }
 
-    def __init__(self, port: str):
-        self._adapter = MTRF64Adapter(port, self._on_receive)
+    def __init__(self, port: str, baudrate: int = DEFAULT_BAUDRATE):
+        self._adapter = MTRF64Adapter(port, baudrate, self._on_receive)
 
     def release(self):
         self._adapter.release()

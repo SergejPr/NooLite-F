@@ -106,6 +106,8 @@ _LOGGER_HANDLER = logging.StreamHandler()
 _LOGGER_HANDLER.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s", "%Y-%m-%d %H:%M:%S"))
 _LOGGER.addHandler(_LOGGER_HANDLER)
 
+DEFAULT_BAUDRATE = 9600
+
 
 class MTRF64Adapter(object):
     _packet_size = 17
@@ -118,8 +120,8 @@ class MTRF64Adapter(object):
     _listener = None
     _is_released = False
 
-    def __init__(self, port: str, on_receive_data=None):
-        self._serial = Serial(baudrate=9600)
+    def __init__(self, port: str, baudrate: int = DEFAULT_BAUDRATE, on_receive_data=None):
+        self._serial = Serial(baudrate=baudrate)
         self._serial.port = port
         self._serial.open()
 
